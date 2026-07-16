@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Alert, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -84,7 +85,8 @@ export default function OficinaDeRimas() {
       <StatusBar hidden />
 
       {/* HUD */}
-      <LinearGradient colors={['#12CBC4', '#1289A7', '#4D96FF']} style={gameStyles.hud}>
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient colors={['#12CBC4', '#1289A7', '#4D96FF']} style={gameStyles.hud}>
         <TouchableOpacity onPress={() => router.push('/')} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={26} color="#FFF" />
         </TouchableOpacity>
@@ -103,7 +105,8 @@ export default function OficinaDeRimas() {
           <Text style={gameStyles.hudScoreLabel}>PONTOS</Text>
           <Text style={gameStyles.hudScoreValue}>{score}</Text>
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       <View style={gameStyles.gameArea}>
         {/* Instrução */}

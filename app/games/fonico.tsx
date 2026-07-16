@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, StatusBar, ScrollView, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -49,7 +50,8 @@ export default function FonicoGame() {
       <StatusBar hidden />
 
       {/* HUD */}
-      <LinearGradient colors={['#B983FF', '#8649CB', '#FF82A9']} style={gameStyles.hud}>
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient colors={['#B983FF', '#8649CB', '#FF82A9']} style={gameStyles.hud}>
         <TouchableOpacity onPress={() => router.push('/')} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={26} color="#FFF" />
         </TouchableOpacity>
@@ -62,7 +64,8 @@ export default function FonicoGame() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <GameInfoButton gameKey="fonico" style={{ marginRight: 8 }} />
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       {isLibrasActive && activeLetter && <LibrasSign text={activeLetter} />}
 

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Alert, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -153,7 +154,8 @@ export default function VilaDasLetrasGame() {
       <StatusBar hidden />
 
       {/* ═══ HUD superior ═══ */}
-      <LinearGradient colors={['#8E44AD', '#C44569', '#FF6B6B']} style={gameStyles.hud}>
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient colors={['#8E44AD', '#C44569', '#FF6B6B']} style={gameStyles.hud}>
         <TouchableOpacity onPress={() => router.push('/')} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={26} color="#FFF" />
         </TouchableOpacity>
@@ -185,7 +187,8 @@ export default function VilaDasLetrasGame() {
             <Text style={gameStyles.hudScoreValue}>{score}</Text>
           </View>
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       {/* Libras */}
       {isLibrasActive && <LibrasSign text={levelData.correctAnswer} />}

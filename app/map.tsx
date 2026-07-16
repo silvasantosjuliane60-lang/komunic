@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
@@ -89,7 +90,7 @@ export default function MapScreen() {
       <StatusBar hidden={true} />
       
       {/* ================= HUD SUPERIOR ================= */}
-      <View style={styles.hud}>
+      <SafeAreaView edges={["top"]} style={styles.hud}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back-circle" size={40} color="white" />
         </TouchableOpacity>
@@ -108,7 +109,7 @@ export default function MapScreen() {
              <Text style={styles.scoreText}> 140</Text>
           </View>
         </View>
-      </View>
+      </SafeAreaView>
 
       {/* ================= MAPA DE FASES ================= */}
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>

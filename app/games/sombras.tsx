@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, StatusBar, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -52,7 +53,8 @@ export default function SombrasGame() {
       <StatusBar hidden />
 
       {/* HUD */}
-      <LinearGradient colors={['#2C2C54', '#474787', '#9C27B0']} style={gameStyles.hud}>
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient colors={['#2C2C54', '#474787', '#9C27B0']} style={gameStyles.hud}>
         <TouchableOpacity onPress={() => router.push('/')} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={26} color="#FFF" />
         </TouchableOpacity>
@@ -71,7 +73,8 @@ export default function SombrasGame() {
           <Text style={gameStyles.hudScoreLabel}>PONTOS</Text>
           <Text style={gameStyles.hudScoreValue}>{score}</Text>
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       <View style={gameStyles.gameArea}>
         {/* Instrução */}

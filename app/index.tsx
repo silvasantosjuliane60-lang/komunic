@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Dimensions, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
@@ -40,7 +41,7 @@ export default function HomeLandscape() {
       <StatusBar hidden={true} />
       
       {/* ================= TOPO (HUD) ================= */}
-      <View style={styles.header}>
+      <SafeAreaView edges={["top"]} style={styles.header}>
         {/* Esquerda: Avatar */}
         <View style={styles.avatarContainer}>
           <View style={styles.avatarCircle}>
@@ -76,7 +77,7 @@ export default function HomeLandscape() {
             <Ionicons name="person-circle" size={40} color="white" />
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
 
       {/* ================= CORPO PRINCIPAL ================= */}
       <View style={styles.mainBody}>

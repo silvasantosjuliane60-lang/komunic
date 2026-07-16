@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, PanResponder, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAudio } from '../../hooks/useAudio';
@@ -204,10 +205,11 @@ export default function TracoGame() {
     <ImageBackground source={require('../../assets/images/bg_escola.jpg')} style={styles.background} blurRadius={3}>
 
       {/* ─── HUD (position absolute, zIndex 10) ─── */}
-      <LinearGradient
-        colors={['#FF82A9', '#C44569', '#8E44AD']}
-        style={[gameStyles.hud, styles.hudAbsolute]}
-      >
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient
+          colors={['#FF82A9', '#C44569', '#8E44AD']}
+          style={[gameStyles.hud, styles.hudAbsolute]}
+        >
         <TouchableOpacity onPress={() => router.back()} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
@@ -231,7 +233,8 @@ export default function TracoGame() {
             <Text style={gameStyles.hudScoreValue}>{currentLetterIndex + 1}/{ALPHABET.length}</Text>
           </View>
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       {isLibrasActive && <LibrasSign text={letter} size="small" />}
 

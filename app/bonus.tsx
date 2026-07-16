@@ -4,6 +4,7 @@ import {
   View, Text, StyleSheet, ImageBackground, TouchableOpacity,
   ScrollView, StatusBar, Alert, Linking, Dimensions
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -130,7 +131,8 @@ export default function BonusPage() {
       <StatusBar hidden />
 
       {/* HUD */}
-      <LinearGradient colors={['#FF6B6B', '#EE5A24', '#FFC312']} style={styles.hud}>
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient colors={['#FF6B6B', '#EE5A24', '#FFC312']} style={styles.hud}>
         <TouchableOpacity onPress={() => {
           if (selectedCategory) {
             setSelectedCategory(null);
@@ -151,7 +153,8 @@ export default function BonusPage() {
         <View style={styles.hudRight}>
           <FontAwesome5 name="gift" size={28} color="#FFF" />
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         

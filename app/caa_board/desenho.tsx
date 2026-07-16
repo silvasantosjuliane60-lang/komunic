@@ -11,6 +11,7 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -425,7 +426,7 @@ export default function CAABoard() {
     setShowAlphabetPicker(false);
   };
 
-  // Renderizar pontos do desenho
+  // Renderizar traços contínuos: segmentos entre pontos + pontas arredondadas
   const renderDots = () => {
     const allPaths = [...paths.map((p) => ({
       points: p.points,
@@ -441,27 +442,101 @@ export default function CAABoard() {
       });
     }
 
-    return allPaths.map((pathData, pathIdx) =>
-      pathData.points.map((point, ptIdx) => {
-        if (ptIdx % 2 !== 0 && ptIdx !== pathData.points.length - 1 && ptIdx !== 0) return null;
-        const dotSize = pathData.size;
-        return (
+    const elements = [];
+
+    allPaths.forEach((pathData, pathIdx) => {
+      const pts = pathData.points;
+      const stroke = pathData.size;
+
+      if (!pts || pts.length === 0) return;
+
+      // If only one point, render a single circle
+      if (pts.length === 1) {
+        const p = pts[0];
+        elements.push(
           <View
-            key={`${pathIdx}-${ptIdx}`}
+            key={`${pathIdx}-single`}
             style={{
               position: 'absolute',
-              left: point.x - dotSize / 2,
-              top: point.y - dotSize / 2,
-              width: dotSize,
-              height: dotSize,
-              borderRadius: dotSize / 2,
+              left: p.x - stroke / 2,
+              top: p.y - stroke / 2,
+              width: stroke,
+              height: stroke,
+              borderRadius: stroke / 2,
               backgroundColor: pathData.color,
             }}
             pointerEvents="none"
           />
         );
-      })
-    );
+        return;
+      }
+
+      // Draw segments between consecutive points
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const distance = Math.hypot(dx, dy);
+        const angle = Math.atan2(dy, dx);
+
+        const mx = (p1.x + p2.x) / 2;
+        const my = (p1.y + p2.y) / 2;
+
+        elements.push(
+          <View
+            key={`${pathIdx}-seg-${i}`}
+            style={{
+              position: 'absolute',
+              left: mx - distance / 2,
+              top: my - stroke / 2,
+              width: distance,
+              height: stroke,
+              backgroundColor: pathData.color,
+              borderRadius: stroke / 2,
+              transform: [{ rotate: `${angle}rad` }],
+            }}
+            pointerEvents="none"
+          />
+        );
+      }
+
+      // Draw small circles at start and end to make round caps
+      const start = pts[0];
+      const end = pts[pts.length - 1];
+      elements.push(
+        <View
+          key={`${pathIdx}-start`}
+          style={{
+            position: 'absolute',
+            left: start.x - stroke / 2,
+            top: start.y - stroke / 2,
+            width: stroke,
+            height: stroke,
+            borderRadius: stroke / 2,
+            backgroundColor: pathData.color,
+          }}
+          pointerEvents="none"
+        />
+      );
+      elements.push(
+        <View
+          key={`${pathIdx}-end`}
+          style={{
+            position: 'absolute',
+            left: end.x - stroke / 2,
+            top: end.y - stroke / 2,
+            width: stroke,
+            height: stroke,
+            borderRadius: stroke / 2,
+            backgroundColor: pathData.color,
+          }}
+          pointerEvents="none"
+        />
+      );
+    });
+
+    return elements;
   };
 
   const isDarkPaper = paperBg === '#263238';
@@ -476,7 +551,7 @@ export default function CAABoard() {
       <StatusBar hidden={true} />
 
       {/* ================= BARRA SUPERIOR ================= */}
-      <View style={styles.topBar}>
+      <SafeAreaView edges={["top"]} style={styles.topBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back-circle" size={40} color="white" />
         </TouchableOpacity>
@@ -499,7 +574,7 @@ export default function CAABoard() {
             color={isLibrasActive ? '#FFF' : '#666'}
           />
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
       {/* ================= ALFABETO COLORIDO PERMANENTE ================= */}
       <View style={styles.alphabetBar}>

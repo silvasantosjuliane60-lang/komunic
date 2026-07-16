@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Animated, Easing, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAudio } from '../../hooks/useAudio';
@@ -177,10 +178,11 @@ export default function FestaNumerosGame() {
     <ImageBackground source={require('../../assets/images/bg_escola.jpg')} style={styles.background} blurRadius={3}>
 
       {/* ─── HUD (position absolute, zIndex 100) ─── */}
-      <LinearGradient
-        colors={['#FFC312', '#F79F1F', '#EE5A24']}
-        style={[gameStyles.hud, styles.hudAbsolute]}
-      >
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient
+          colors={['#FFC312', '#F79F1F', '#EE5A24']}
+          style={[gameStyles.hud, styles.hudAbsolute]}
+        >
         <TouchableOpacity onPress={() => router.back()} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
@@ -200,7 +202,8 @@ export default function FestaNumerosGame() {
             <Text style={gameStyles.hudScoreValue}>{score}</Text>
           </View>
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       {/* PAINEL DE NÚMEROS */}
       <View style={styles.panelContainer}>

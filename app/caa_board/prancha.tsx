@@ -12,6 +12,7 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -250,7 +251,7 @@ export default function CAAPrancha() {
       />
 
       {/* ================= BARRA SUPERIOR ================= */}
-      <View style={styles.topBar}>
+      <SafeAreaView edges={["top"]} style={styles.topBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back-circle" size={40} color="white" />
         </TouchableOpacity>
@@ -273,7 +274,7 @@ export default function CAAPrancha() {
             color={isLibrasActive ? '#FFF' : '#666'}
           />
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
       {/* ================= BARRA DE SENTENÇA ================= */}
       <View style={styles.sentenceBarContainer}>

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -26,7 +27,7 @@ export default function CAAHub() {
       <StatusBar hidden={true} />
 
       {/* ================= BARRA SUPERIOR ================= */}
-      <View style={styles.topBar}>
+      <SafeAreaView edges={["top"]} style={styles.topBar}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back-circle" size={40} color="white" />
         </TouchableOpacity>
@@ -49,7 +50,7 @@ export default function CAAHub() {
             color={isLibrasActive ? '#FFF' : '#666'}
           />
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
       {/* ================= CONTEÚDO PRINCIPAL ================= */}
       <View style={styles.mainContent}>

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Alert, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -60,7 +61,8 @@ export default function BibliotecaGame() {
       <StatusBar hidden={true} />
 
       {/* ─── HUD ─── */}
-      <LinearGradient colors={['#009432', '#12CBC4', '#4D96FF']} style={gameStyles.hud}>
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient colors={['#009432', '#12CBC4', '#4D96FF']} style={gameStyles.hud}>
         <TouchableOpacity onPress={() => router.push('/')} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
@@ -92,7 +94,8 @@ export default function BibliotecaGame() {
             <Text style={gameStyles.hudScoreValue}>{score}</Text>
           </View>
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       {/* ─── GAME AREA ─── */}
       <View style={gameStyles.gameArea}>

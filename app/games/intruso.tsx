@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, StatusBar, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -52,7 +53,8 @@ export default function IntrusoGame() {
       <StatusBar hidden />
 
       {/* HUD */}
-      <LinearGradient colors={['#C44569', '#8E44AD', '#4D96FF']} style={gameStyles.hud}>
+      <SafeAreaView edges={["top"]}>
+        <LinearGradient colors={['#C44569', '#8E44AD', '#4D96FF']} style={gameStyles.hud}>
         <TouchableOpacity onPress={() => router.push('/')} style={gameStyles.hudBackBtn}>
           <Ionicons name="arrow-back" size={26} color="#FFF" />
         </TouchableOpacity>
@@ -71,7 +73,8 @@ export default function IntrusoGame() {
           <Text style={gameStyles.hudScoreLabel}>PONTOS</Text>
           <Text style={gameStyles.hudScoreValue}>{score}</Text>
         </View>
-      </LinearGradient>
+        </LinearGradient>
+      </SafeAreaView>
 
       <View style={gameStyles.gameArea}>
         {/* Instrução */}
