@@ -8,7 +8,7 @@ export const AccessibilityContext = createContext({
   toggleHighContrast: () => {}
 });
 
-export const AccessibilityProvider = ({ children }) => {
+export const AccessibilityProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLibrasActive, setIsLibrasActive] = useState(false);
   const [isHighContrast, setIsHighContrast] = useState(false);
 

@@ -12,9 +12,52 @@ import { gameStyles, OPTION_GRADIENTS } from '../../constants/GameStyles';
 import { Colors } from '../../constants/Colors';
 import { GameInfoButton } from '../../components/GameIntro';
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const PHONEMIC_ALPHABET = [
+  { letter: 'A' },   { letter: 'B' }, { letter: 'C' },
+  { letter: 'D' },  { letter: 'E' }, { letter: 'F' },
+  { letter: 'G' },  { letter: 'H' }, { letter: 'I' },
+  { letter: 'J' },{ letter: 'K' }, { letter: 'L' },
+  { letter: 'M' }, { letter: 'N' }, { letter: 'O' },
+  { letter: 'P' },  { letter: 'Q' }, { letter: 'R' },
+  { letter: 'S' },{ letter: 'T' }, { letter: 'U' },
+  { letter: 'V' },  { letter: 'W' },{ letter: 'X' },
+  { letter: 'Y' },{ letter: 'Z' },
+];
+
+const SYLLABLE_FAMILIES = [
+  { title: 'BA / BE / BI / BO / BU', syllables: ['BA', 'BE', 'BI', 'BO', 'BU'] },
+  { title: 'CA / CE / CI / CO / CU', syllables: ['CA', 'CE', 'CI', 'CO', 'CU'] },
+  { title: 'DA / DE / DI / DO / DU', syllables: ['DA', 'DE', 'DI', 'DO', 'DU'] },
+  { title: 'FA / FE / FI / FO / FU', syllables: ['FA', 'FE', 'FI', 'FO', 'FU'] },
+  { title: 'GA / GE / GI / GO / GU', syllables: ['GA', 'GE', 'GI', 'GO', 'GU'] },
+  { title: 'LA / LE / LI / LO / LU', syllables: ['LA', 'LE', 'LI', 'LO', 'LU'] },
+  { title: 'MA / ME / MI / MO / MU', syllables: ['MA', 'ME', 'MI', 'MO', 'MU'] },
+  { title: 'NA / NE / NI / NO / NU', syllables: ['NA', 'NE', 'NI', 'NO', 'NU'] },
+  { title: 'PA / PE / PI / PO / PU', syllables: ['PA', 'PE', 'PI', 'PO', 'PU'] },
+  { title: 'SA / SE / SI / SO / SU', syllables: ['SA', 'SE', 'SI', 'SO', 'SU'] },
+  { title: 'TA / TE / TI / TO / TU', syllables: ['TA', 'TE', 'TI', 'TO', 'TU'] },
+  { title: 'VA / VE / VI / VO / VU', syllables: ['VA', 'VE', 'VI', 'VO', 'VU'] },
+];
 
 const LetterButton = ({ letter, onPress, index, isActive }) => {
+  const allGradients = [
+    ['#4D96FF', '#2D6ECC'], ['#B983FF', '#8649CB'], ['#FF6B6B', '#EE5A24'],
+    ['#FFC312', '#F79F1F'], ['#12CBC4', '#009432'], ['#6BCB77', '#4D9A5C'],
+    ['#FF82A9', '#D94F78'], ['#FFB347', '#E07A00'], ['#FDA7DF', '#D980FA'],
+  ];
+  const colorGradient = allGradients[index % allGradients.length];
+
+  return (
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={[styles.letterBtnContainer, isActive && styles.letterBtnActive]}>
+      <LinearGradient colors={colorGradient} style={styles.letterBtn}>
+        <View style={styles.glossyHighlight} />
+        <Text style={styles.letterBtnText}>{letter}</Text>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+};
+
+const SoundButton = ({ text, onPress, index, isActive }) => {
   const allGradients = [
     ['#FF6B6B', '#EE5A24'], ['#FFC312', '#F79F1F'], ['#12CBC4', '#009432'],
     ['#C44569', '#833471'], ['#FDA7DF', '#D980FA'], ['#4D96FF', '#2D6ECC'],
@@ -24,10 +67,9 @@ const LetterButton = ({ letter, onPress, index, isActive }) => {
   const colorGradient = allGradients[index % allGradients.length];
   
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.letterBtnContainer}>
-      <LinearGradient colors={colorGradient} style={styles.letterBtn}>
-        <View style={styles.glossyHighlight} />
-        <Text style={styles.letterBtnText}>{letter}</Text>
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={[styles.syllableBtnContainer, isActive && styles.syllableBtnActive]}>
+      <LinearGradient colors={colorGradient} style={styles.syllableBtn}>
+        <Text style={styles.syllableBtnText}>{text}</Text>
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -37,12 +79,25 @@ export default function FonicoGame() {
   const router = useRouter();
   const { isLibrasActive } = useAccessibility();
   const { playPhoneme } = useAudio();
-  const [activeLetter, setActiveLetter] = React.useState(null);
+  const [activeLetter, setActiveLetter] = React.useState<string | null>(null);
+  const [activeSyllable, setActiveSyllable] = React.useState<string | null>(null);
 
   const handlePress = (letter) => {
     setActiveLetter(letter);
-    playPhoneme(letter, '');
-    setTimeout(() => setActiveLetter(null), 1500);
+    setActiveSyllable(null);
+    playPhoneme(letter);
+    setTimeout(() => {
+      setActiveLetter(null);
+    }, 1500);
+  };
+
+  const handleSyllablePress = (syllable) => {
+    setActiveSyllable(syllable);
+    setActiveLetter(null);
+    playPhoneme(syllable);
+    setTimeout(() => {
+      setActiveSyllable(null);
+    }, 1500);
   };
 
   return (
@@ -70,18 +125,39 @@ export default function FonicoGame() {
       {isLibrasActive && activeLetter && <LibrasSign text={activeLetter} />}
 
       <View style={styles.instructionContainer}>
-        <Text style={styles.instructionText}>🎵 Toque em uma letra para ouvir seu som!</Text>
+        <Text style={styles.instructionText}>🎵 Toque em uma letra ou família silábica para ouvir o som!</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollArea} showsVerticalScrollIndicator={false}>
         <View style={styles.grid}>
-          {ALPHABET.map((letter, index) => (
+          {PHONEMIC_ALPHABET.map((item, index) => (
              <LetterButton 
-               key={letter} 
-               letter={letter} 
+               key={item.letter} 
+               letter={item.letter} 
                index={index}
-               onPress={() => handlePress(letter)}
+               isActive={activeLetter === item.letter}
+               onPress={() => handlePress(item.letter)}
              />
+          ))}
+        </View>
+
+        <View style={styles.familySection}>
+          <Text style={styles.familyHeading}>Famílias silábicas</Text>
+          {SYLLABLE_FAMILIES.map((family, familyIndex) => (
+            <View key={family.title} style={styles.familyCard}>
+              <Text style={styles.familyTitle}>{family.title}</Text>
+              <View style={styles.familyRow}>
+                {family.syllables.map((syllable, index) => (
+                  <SoundButton
+                    key={syllable}
+                    text={syllable}
+                    index={index + familyIndex * 5}
+                    isActive={activeSyllable === syllable}
+                    onPress={() => handleSyllablePress(syllable)}
+                  />
+                ))}
+              </View>
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -107,8 +183,19 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
   
   letterBtnContainer: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 5, elevation: 6 },
+  letterBtnActive: { borderWidth: 4, borderColor: '#FFF' },
   letterBtn: { width: btnSize, height: btnSize, borderRadius: 12, borderWidth: 2, borderColor: 'rgba(255,255,255,0.8)', alignItems: 'center', justifyContent: 'center' },
   glossyHighlight: { position: 'absolute', top: 2, left: '10%', right: '10%', height: '30%', backgroundColor: 'rgba(255,255,255,0.4)', borderRadius: 10 },
-  letterBtnText: { color: '#FFF', fontSize: btnSize * 0.35, fontWeight: 'bold', textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: {width: 1, height: 1}, textShadowRadius: 2 }
+  letterBtnText: { color: '#FFF', fontSize: btnSize * 0.35, fontWeight: 'bold', textTransform: 'uppercase', textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: {width: 1, height: 1}, textShadowRadius: 2 },
+  phonemeText: { color: 'rgba(255,255,255,0.9)', fontSize: btnSize * 0.16, marginTop: 4, textAlign: 'center', fontWeight: '700' },
+  familySection: { marginTop: 24 },
+  familyHeading: { fontSize: 18, fontWeight: '900', color: '#FFF', textAlign: 'center', marginBottom: 12 },
+  familyCard: { marginBottom: 18, padding: 14, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 18, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)' },
+  familyTitle: { color: '#FFF', fontSize: 14, fontWeight: '700', marginBottom: 10, textAlign: 'center' },
+  familyRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 },
+  syllableBtnContainer: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 5, elevation: 6 },
+  syllableBtn: { minWidth: (width - 90) / 5, paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  syllableBtnText: { color: '#FFF', fontSize: 14, fontWeight: '900', textTransform: 'uppercase' },
+  syllableBtnActive: { borderWidth: 4, borderColor: '#FFF' }
 });
 

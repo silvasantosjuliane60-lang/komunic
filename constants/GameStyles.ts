@@ -87,6 +87,7 @@ export const gameStyles = StyleSheet.create({
     fontWeight: '900',
     color: '#FFF',
     letterSpacing: 2,
+    textTransform: 'uppercase',
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
@@ -105,6 +106,7 @@ export const gameStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     color: '#FFEB3B',
+    textTransform: 'uppercase',
   },
   hudScore: {
     alignItems: 'center',
@@ -120,6 +122,7 @@ export const gameStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFEB3B',
     letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   hudScoreValue: {
     fontSize: 22,
@@ -209,6 +212,7 @@ export const gameStyles = StyleSheet.create({
     color: '#2C2C54',
     letterSpacing: 10,
     textAlign: 'center',
+    textTransform: 'uppercase',
   },
   wordMissingLetter: {
     color: '#FF6B6B',
@@ -279,6 +283,7 @@ export const gameStyles = StyleSheet.create({
     color: '#FFF',
     fontSize: 48,
     fontWeight: '900',
+    textTransform: 'uppercase',
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 4,
@@ -287,6 +292,7 @@ export const gameStyles = StyleSheet.create({
     color: '#FFF',
     fontSize: 20,
     fontWeight: '900',
+    textTransform: 'uppercase',
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,

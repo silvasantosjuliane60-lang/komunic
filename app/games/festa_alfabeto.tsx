@@ -29,7 +29,7 @@ const BALLOON_COLORS = [
 ];
 
 // Componente para animar um balão flutuando
-const Balloon = ({ id, letter, color, onPop, isTarget, isLibrasActive }) => {
+const Balloon = ({ id, letter, left, color, onPop, isTarget, isLibrasActive }) => {
   const translateY = useRef(new Animated.Value(SCREEN_HEIGHT + 100)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const [popped, setPopped] = useState(false);
@@ -44,7 +44,7 @@ const Balloon = ({ id, letter, color, onPop, isTarget, isLibrasActive }) => {
       useNativeDriver: true,
     }).start(({ finished }) => {
       if (finished && !popped) {
-        onPop(id, false); // Acabou o tempo e não foi estourado
+        onPop(id, false);
       }
     });
   }, []);
@@ -53,13 +53,14 @@ const Balloon = ({ id, letter, color, onPop, isTarget, isLibrasActive }) => {
     if (popped) return;
     setPopped(true);
     
-    // Animação de estouro
-    Animated.timing(opacity, {
-      toValue: 0,
-      duration: 100,
-      useNativeDriver: true,
-    }).start(() => {
-      onPop(id, letter);
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 120,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      onPop(id, letter, left);
     });
   };
 
@@ -83,6 +84,45 @@ const Balloon = ({ id, letter, color, onPop, isTarget, isLibrasActive }) => {
   );
 };
 
+const FlyingLetter = ({ id, letter, left, onComplete }) => {
+  const translateY = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: -220,
+        duration: 700,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 700,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 0.8,
+        duration: 700,
+        useNativeDriver: true,
+      }),
+    ]).start(() => onComplete(id));
+  }, []);
+
+  return (
+    <Animated.View
+      style={[
+        styles.flyingLetter,
+        { left, transform: [{ translateY }, { scale }] , opacity },
+      ]}
+      pointerEvents="none"
+    >
+      <Text style={styles.flyingLetterText}>{letter}</Text>
+    </Animated.View>
+  );
+};
+
 export default function FestaAlfabetoGame() {
   const router = useRouter();
   const { playSuccess, playError, speakText, stopSpeech } = useAudio();
@@ -92,6 +132,7 @@ export default function FestaAlfabetoGame() {
   const [score, setScore] = useState(0);
   const [collected, setCollected] = useState<string[]>([]);
   const [balloons, setBalloons] = useState<any[]>([]);
+  const [flyingLetters, setFlyingLetters] = useState<any[]>([]);
 
   const targets = LEVELS[currentLevel];
   const nextBalloonId = useRef(0);
@@ -146,7 +187,7 @@ export default function FestaAlfabetoGame() {
     setBalloons(prev => [...prev, newBalloon]);
   };
 
-  const handlePop = (id, letter) => {
+  const handlePop = (id, letter, left) => {
     setBalloons(prev => prev.filter(b => b.id !== id));
 
     if (!letter) return; // Só sumiu da tela por passar do limite
@@ -158,8 +199,8 @@ export default function FestaAlfabetoGame() {
       setScore(s => s + 10);
       const newCollected = [...collected, letter];
       setCollected(newCollected);
+      setFlyingLetters(prev => [...prev, { id: `fly-${id}`, letter, left }]);
       
-      // Checa se completou o level
       if (newCollected.length === targets.length) {
         setTimeout(() => {
           if (currentLevel < LEVELS.length - 1) {
@@ -175,6 +216,10 @@ export default function FestaAlfabetoGame() {
     } else {
       playError();
     }
+  };
+
+  const handleFlyingComplete = (id) => {
+    setFlyingLetters(prev => prev.filter(item => item.id !== id));
   };
 
   return (
@@ -231,12 +276,22 @@ export default function FestaAlfabetoGame() {
             <Balloon
               id={b.id}
               letter={b.letter}
+              left={b.left}
               color={b.color}
               isTarget={b.isTarget}
               isLibrasActive={isLibrasActive}
               onPop={handlePop}
             />
           </View>
+        ))}
+        {flyingLetters.map(item => (
+          <FlyingLetter
+            key={item.id}
+            id={item.id}
+            letter={item.letter}
+            left={item.left}
+            onComplete={handleFlyingComplete}
+          />
         ))}
       </View>
 

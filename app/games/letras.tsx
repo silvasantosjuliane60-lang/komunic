@@ -84,7 +84,7 @@ export default function VilaDasLetrasGame() {
 
   const handleAnswer = (letter) => {
     stopSpeech();
-    playPhoneme(letter, `Letra ${letter}`);
+    playPhoneme(letter);
     if (letter === levelData.correctAnswer) {
       setFeedback('correct');
       playSuccess();

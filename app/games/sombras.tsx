@@ -10,9 +10,9 @@ import { gameStyles, OPTION_GRADIENTS } from '../../constants/GameStyles';
 
 // Usando emojis como "sombras" (mostrar emoji escuro vs colorido)
 const ROUNDS = [
-  { label: 'Cachorro', shadowEmoji: '🐶', options: [{ emoji: '🐱', label: 'Gato' }, { emoji: '🐶', label: 'Cachorro' }, { emoji: '🐴', label: 'Cavalo' }, { emoji: '🦊', label: 'Raposa' }], correct: 'Cachorro' },
-  { label: 'Carro',    shadowEmoji: '🚗', options: [{ emoji: '🚗', label: 'Carro' }, { emoji: '🚌', label: 'Ônibus' }, { emoji: '🚛', label: 'Caminhão' }, { emoji: '🚲', label: 'Bicicleta' }], correct: 'Carro' },
-  { label: 'Maçã',     shadowEmoji: '🍎', options: [{ emoji: '🥕', label: 'Cenoura' }, { emoji: '🍎', label: 'Maçã' }, { emoji: '🍋', label: 'Limão' }, { emoji: '🌶️', label: 'Pimenta' }], correct: 'Maçã' },
+  { label: 'Cachorro', shadowIcon: 'dog', options: [{ emoji: '🐱', label: 'Gato' }, { emoji: '🐶', label: 'Cachorro' }, { emoji: '🐴', label: 'Cavalo' }, { emoji: '🦊', label: 'Raposa' }], correct: 'Cachorro' },
+  { label: 'Carro',    shadowIcon: 'car-side', options: [{ emoji: '🚗', label: 'Carro' }, { emoji: '🚌', label: 'Ônibus' }, { emoji: '🚛', label: 'Caminhão' }, { emoji: '🚲', label: 'Bicicleta' }], correct: 'Carro' },
+  { label: 'Maçã',     shadowIcon: 'apple-alt', options: [{ emoji: '🥕', label: 'Cenoura' }, { emoji: '🍎', label: 'Maçã' }, { emoji: '🍋', label: 'Limão' }, { emoji: '🌶️', label: 'Pimenta' }], correct: 'Maçã' },
 ];
 
 export default function SombrasGame() {
@@ -83,9 +83,9 @@ export default function SombrasGame() {
           <Text style={gameStyles.instructionText}>Encontre a sombra correta!</Text>
         </View>
 
-        {/* Sombra - emoji em preto */}
+        {/* Sombra - Ícone escuro */}
         <View style={styles.shadowBox}>
-          <Text style={styles.shadowEmoji}>{round.shadowEmoji}</Text>
+          <FontAwesome5 name={round.shadowIcon} size={80} color="#111" style={styles.shadowIconStyle} />
           <Text style={styles.shadowLabel}>???</Text>
         </View>
 
@@ -123,8 +123,8 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 15,
   },
-  shadowEmoji: { fontSize: 90, opacity: 0.15 },
-  shadowLabel: { fontSize: 22, fontWeight: '900', color: 'rgba(255,255,255,0.6)', marginTop: -10 },
+  shadowIconStyle: { opacity: 0.9, marginBottom: 10 },
+  shadowLabel: { fontSize: 22, fontWeight: '900', color: 'rgba(255,255,255,0.6)' },
   optionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',

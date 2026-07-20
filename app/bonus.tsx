@@ -72,39 +72,38 @@ const LEVEL_COLORS = {
   'Difícil': '#FF6B6B',
 };
 
-const ActivityCard = ({ activity, onPress }) => (
-  <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={styles.actCard}>
-    <LinearGradient colors={['#FFFFFF', '#F8F9FF']} style={styles.actCardGradient}>
-      {/* Emoji grande */}
+const ActivityCard = ({ activity, onPreview, onToggleSelect, selected }) => (
+  <View style={styles.actCard}>
+    <TouchableOpacity activeOpacity={0.85} onPress={onPreview} style={styles.actCardGradient}>
       <Text style={styles.actEmoji}>{activity.emoji}</Text>
-      
-      {/* Título */}
       <Text style={styles.actTitle} numberOfLines={2}>{activity.title}</Text>
-      
-      {/* Descrição */}
       <Text style={styles.actDesc} numberOfLines={2}>{activity.desc}</Text>
-      
-      {/* Badge de nível */}
       <View style={styles.actMeta}>
-        <View style={[styles.levelBadge, { backgroundColor: LEVEL_COLORS[activity.level] }]}>
+        <View style={[styles.levelBadge, { backgroundColor: LEVEL_COLORS[activity.level] }]}> 
           <Text style={styles.levelText}>{activity.level}</Text>
         </View>
         <Text style={styles.pageCount}>📄 {activity.pages} pág</Text>
       </View>
+    </TouchableOpacity>
 
-      {/* Botão de Download */}
-      <LinearGradient colors={['#4D96FF', '#2D6ECC']} style={styles.downloadBtn}>
-        <FontAwesome5 name="download" size={14} color="#FFF" />
-        <Text style={styles.downloadText}>Baixar PDF</Text>
-      </LinearGradient>
-    </LinearGradient>
-  </TouchableOpacity>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={onToggleSelect}
+      style={[styles.selectBtn, selected && styles.selectBtnSelected]}
+    >
+      <Text style={[styles.selectBtnText, selected && styles.selectBtnTextSelected]}>
+        {selected ? 'Selecionado' : 'Selecionar'}
+      </Text>
+    </TouchableOpacity>
+  </View>
 );
 
 export default function BonusPage() {
   const router = useRouter();
   const { speakText } = useAudio();
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [previewActivityId, setPreviewActivityId] = useState<string | null>(null);
 
   const handleDownload = (activity) => {
     speakText(`Baixando ${activity.title}`);
@@ -114,6 +113,33 @@ export default function BonusPage() {
       [
         { text: 'OK, Entendi! 🎉', style: 'default' },
       ]
+    );
+  };
+
+  const handleToggleSelect = (activityId: string) => {
+    setSelectedActivities((prev) =>
+      prev.includes(activityId) ? prev.filter((id) => id !== activityId) : [...prev, activityId]
+    );
+  };
+
+  const handlePreview = (activityId: string) => {
+    setPreviewActivityId(activityId);
+  };
+
+  const handleDownloadSelected = () => {
+    const activeCategoryActivities = activeCategory?.activities || [];
+    const selected = activeCategoryActivities.filter((act) => selectedActivities.includes(act.id));
+    if (!selected.length) {
+      Alert.alert('Nenhuma atividade selecionada', 'Escolha pelo menos uma atividade antes de baixar.');
+      return;
+    }
+
+    const titles = selected.map((act) => act.title).join(', ');
+    speakText(`Baixando ${selected.length} atividades`);
+    Alert.alert(
+      '📥 Baixar atividades',
+      `As seguintes atividades serão baixadas:\n\n${titles}\n\nEssa funcionalidade estará disponível em breve!`,
+      [{ text: 'OK, Entendi! 🎉', style: 'default' }]
     );
   };
 
@@ -207,15 +233,46 @@ export default function BonusPage() {
         ) : (
           /* ============ ATIVIDADES DA CATEGORIA ============ */
           <>
+            <View style={styles.activityHeader}>
+              <Text style={styles.activityHeaderTitle}>Selecione as atividades</Text>
+              <Text style={styles.activityHeaderSubtitle}>Toque em cada atividade para ver mais detalhes.</Text>
+            </View>
+
             <View style={styles.activitiesGrid}>
               {activeCategory?.activities.map((act) => (
                 <ActivityCard
                   key={act.id}
                   activity={act}
-                  onPress={() => handleDownload(act)}
+                  onPreview={() => handlePreview(act.id)}
+                  onToggleSelect={() => handleToggleSelect(act.id)}
+                  selected={selectedActivities.includes(act.id)}
                 />
               ))}
             </View>
+
+            <View style={styles.downloadBar}>
+              <Text style={styles.downloadSummary}>{selectedActivities.length} selecionada(s)</Text>
+              <TouchableOpacity activeOpacity={0.85} onPress={handleDownloadSelected} style={styles.downloadAllBtn}>
+                <Text style={styles.downloadAllText}>Baixar selecionadas</Text>
+              </TouchableOpacity>
+            </View>
+
+            {previewActivityId && (
+              <View style={styles.previewCard}>
+                <Text style={styles.previewTitle}>Pré-visualização</Text>
+                {activeCategory?.activities
+                  .filter((act) => act.id === previewActivityId)
+                  .map((act) => (
+                    <View key={act.id} style={styles.previewContent}>
+                      <Text style={styles.previewEmoji}>{act.emoji}</Text>
+                      <Text style={styles.previewName}>{act.title}</Text>
+                      <Text style={styles.previewDesc}>{act.desc}</Text>
+                      <Text style={styles.previewMeta}>Nível: {act.level}</Text>
+                      <Text style={styles.previewMeta}>Páginas: {act.pages}</Text>
+                    </View>
+                  ))}
+              </View>
+            )}
           </>
         )}
       </ScrollView>
@@ -433,6 +490,105 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center',
     marginBottom: 4,
+  },
+  selectBtn: {
+    marginTop: 10,
+    alignSelf: 'center',
+    backgroundColor: '#F1F3FF',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#4D96FF',
+  },
+  selectBtnSelected: {
+    backgroundColor: '#4D96FF',
+  },
+  selectBtnText: {
+    color: '#4D96FF',
+    fontWeight: '800',
+    fontSize: 12,
+  },
+  selectBtnTextSelected: {
+    color: '#FFF',
+  },
+  activityHeader: {
+    marginBottom: 14,
+    paddingHorizontal: 8,
+  },
+  activityHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#333',
+    marginBottom: 4,
+  },
+  activityHeaderSubtitle: {
+    fontSize: 12,
+    color: '#666',
+  },
+  downloadBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+    marginTop: 18,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#DDE6F2',
+  },
+  downloadSummary: {
+    color: '#333',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  downloadAllBtn: {
+    backgroundColor: '#4D96FF',
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  downloadAllText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  previewCard: {
+    marginTop: 20,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    padding: 18,
+    borderWidth: 2,
+    borderColor: '#C4D7FF',
+  },
+  previewTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#333',
+    marginBottom: 10,
+  },
+  previewContent: {
+    gap: 8,
+  },
+  previewEmoji: {
+    fontSize: 40,
+    marginBottom: 6,
+  },
+  previewName: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#222',
+    marginBottom: 4,
+  },
+  previewDesc: {
+    fontSize: 13,
+    color: '#555',
+    marginBottom: 6,
+    lineHeight: 18,
+  },
+  previewMeta: {
+    fontSize: 12,
+    color: '#777',
   },
   actDesc: {
     fontSize: 11,

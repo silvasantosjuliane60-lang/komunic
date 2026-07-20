@@ -48,7 +48,7 @@ export default function SilabasGame() {
 
   const handleAnswer = (syllable) => {
     stopSpeech();
-    playPhoneme(syllable, `Sílaba ${syllable}`);
+    playPhoneme(syllable);
     setSelectedSyllable(syllable);
 
     if (syllable === question.correct) {
