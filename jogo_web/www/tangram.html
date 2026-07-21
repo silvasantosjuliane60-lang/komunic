@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jogo de Tangram - Alfabetização Matemática</title>
+  <style>
+    * { box-sizing: border-box; user-select: none; }
+    body {
+      margin: 0; padding: 20px;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka', sans-serif;
+      background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    }
+    h1 { color: #2c3e50; margin-bottom: 5px; text-shadow: 2px 2px #fff; }
+    p.instrucao { font-size: 1.2rem; color: #34495e; margin-top: 0; }
+    .game-container {
+      display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;
+      background: white; padding: 20px; border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 900px; width: 100%;
+    }
+    .panel {
+      flex: 1; min-width: 280px; background: #f8f9fa; border: 3px dashed #bdc3c7;
+      border-radius: 15px; padding: 15px; display: flex; flex-direction: column; align-items: center;
+    }
+    .panel h2 { margin-top: 0; color: #e67e22; }
+    .pieces-tray {
+      display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center; min-height: 200px;
+    }
+    .piece { cursor: grab; transition: transform 0.2s, filter 0.2s; }
+    .piece:hover { transform: scale(1.05); filter: brightness(1.1); }
+    .piece:active { cursor: grabbing; }
+    .drop-zone {
+      width: 100%; height: 320px; position: relative; background: #edf2f7;
+      border-radius: 12px; border: 2px solid #cbd5e0; overflow: hidden;
+    }
+    .target-slot {
+      position: absolute; border: 3px stroke #a0aec0; background: rgba(160, 174, 192, 0.2);
+      transition: all 0.3s ease;
+    }
+    .target-slot.filled { background: transparent; border: none; }
+    
+    .btn-proximo, .btn-voltar {
+      margin-top: 20px; padding: 15px 30px; font-size: 1.3rem; font-weight: bold; color: white;
+      border: none; border-radius: 50px; cursor: pointer; transition: all 0.1s;
+    }
+    .btn-proximo { background: #2ecc71; box-shadow: 0 5px 0 #27ae60; }
+    .btn-proximo:active { transform: translateY(4px); box-shadow: 0 1px 0 #27ae60; }
+    .btn-voltar { background: #95a5a6; box-shadow: 0 5px 0 #7f8c8d; padding: 10px 20px; font-size: 1.1rem; margin-top: 10px; }
+    .btn-voltar:active { transform: translateY(4px); box-shadow: 0 1px 0 #7f8c8d; }
+    
+    .celebracao {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(255, 255, 255, 0.95);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+    }
+    .celebracao.active { opacity: 1; pointer-events: auto; }
+    .celebracao h1 {
+      font-size: 3rem; color: #9b59b6; text-align: center;
+      animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pop { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Tangram Divertido</h1>
+  <p class="instrucao">Monte as figuras geométricas para descobrir o objeto!</p>
+
+  <div class="game-container">
+    <div class="panel">
+      <h2>Peças Soltas</h2>
+      <div class="pieces-tray" id="tray"></div>
+    </div>
+    <div class="panel">
+      <h2 id="target-title">Construa!</h2>
+      <div class="drop-zone" id="dropZone"></div>
+    </div>
+  </div>
+
+  <button class="btn-proximo" onclick="reiniciarJogo()">🎮 Jogar Novamente</button>
+  <button class="btn-voltar" onclick="window.location.href='index.html'">🏠 Voltar ao Menu</button>
+
+  <div class="celebracao" id="celebracao">
+    <h1 id="textoCelebracao">🎉 Parabéns!</h1>
+    <button class="btn-proximo" onclick="avancarFase()">Próxima Figura ➡️</button>
+  </div>
+
+  <!-- Setas de Navegação -->
+  <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
+      <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='index.html'" title="Voltar ao Menu">⬅️</button>
+      <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='jogo-baloes.html'" title="Próximo Jogo">➡️</button>
+  </div>
+
+  <script>
+    // --- ÁUDIO GRAVADO (MP3) ---
+    let currentVoice = null;
+    function falarMP3(nomeArquivo) {
+      if(currentVoice) { currentVoice.pause(); currentVoice.currentTime = 0; }
+      currentVoice = new Audio(`assets/audio/${nomeArquivo}.mp3`);
+      currentVoice.play().catch(e => console.log('Áudio MP3 falhou:', e));
+    }
+
+    // --- EFEITOS SONOROS MÁGICOS (WEB AUDIO API) ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function tocarSomEncaixe() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      const t = audioCtx.currentTime;
+      // Oscilador 1: Pluck suave
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(880, t); // A5
+      osc1.frequency.exponentialRampToValueAtTime(1760, t + 0.1); // A6
+      
+      gain1.gain.setValueAtTime(0, t);
+      gain1.gain.linearRampToValueAtTime(0.4, t + 0.05);
+      gain1.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+      
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.start(t);
+      osc1.stop(t + 0.3);
+      
+      // Oscilador 2: Brilho agudo
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(1318.51, t); // E6
+      
+      gain2.gain.setValueAtTime(0, t);
+      gain2.gain.linearRampToValueAtTime(0.2, t + 0.05);
+      gain2.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+      
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      osc2.start(t);
+      osc2.stop(t + 0.2);
+    }
+
+    function tocarSomVitoria() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      
+      // Acorde Mágico de Vitória: C5, E5, G5, C6
+      const notas = [523.25, 659.25, 783.99, 1046.50, 1318.51]; 
+      
+      notas.forEach((freq, i) => {
+        const t = audioCtx.currentTime + (i * 0.1);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.3, t + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 1.0);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start(t);
+        osc.stop(t + 1.0);
+      });
+    }
+
+    // --- DEFINIÇÃO DAS 7 FIGURAS ---
+    const FIGURAS = [
+      {
+        id: "Aviao", nome: "Avião ✈️", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#e74c3c", width: 100, height: 100, targetX: 130, targetY: 100, svg: `<polygon points="0,100 50,0 100,100" fill="#e74c3c"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "triangulo", cor: "#3498db", width: 80, height: 80, targetX: 40, targetY: 120, svg: `<polygon points="0,0 80,40 0,80" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "triangulo", cor: "#3498db", width: 80, height: 80, targetX: 200, targetY: 120, svg: `<polygon points="80,0 0,40 80,80" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "quadrado", cor: "#f1c40f", width: 60, height: 60, targetX: 150, targetY: 210, svg: `<rect width="60" height="60" fill="#f1c40f"/>`, som: "tangram_peca_quadrado" }
+        ]
+      },
+      {
+        id: "Casa", nome: "Casa 🏠", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#e74c3c", width: 140, height: 70, targetX: 100, targetY: 60, svg: `<polygon points="0,70 70,0 140,70" fill="#e74c3c"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "quadrado", cor: "#f1c40f", width: 120, height: 120, targetX: 110, targetY: 130, svg: `<rect width="120" height="120" fill="#f1c40f"/>`, som: "tangram_peca_quadrado" },
+          { id: 3, tipo: "retangulo", cor: "#8e44ad", width: 40, height: 60, targetX: 150, targetY: 190, svg: `<rect width="40" height="60" fill="#8e44ad"/>`, som: "tangram_peca_retangulo" }
+        ]
+      },
+      {
+        id: "Barco", nome: "Barco ⛵", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#2ecc71", width: 100, height: 120, targetX: 140, targetY: 60, svg: `<polygon points="100,120 0,120 100,0" fill="#2ecc71"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "triangulo", cor: "#1abc9c", width: 60, height: 80, targetX: 70, targetY: 100, svg: `<polygon points="60,80 0,80 60,0" fill="#1abc9c"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "paralelogramo", cor: "#e67e22", width: 160, height: 50, targetX: 90, targetY: 190, svg: `<polygon points="0,0 140,0 160,50 20,50" fill="#e67e22"/>`, som: "tangram_peca_paralelogramo" }
+        ]
+      },
+      {
+        id: "Gato", nome: "Gatinho 🐱", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#34495e", width: 40, height: 40, targetX: 110, targetY: 80, svg: `<polygon points="0,40 20,0 40,40" fill="#34495e"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "triangulo", cor: "#34495e", width: 40, height: 40, targetX: 170, targetY: 80, svg: `<polygon points="0,40 20,0 40,40" fill="#34495e"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "quadrado", cor: "#e74c3c", width: 80, height: 80, targetX: 120, targetY: 100, svg: `<rect width="80" height="80" fill="#e74c3c"/>`, som: "tangram_peca_quadrado" },
+          { id: 4, tipo: "triangulo", cor: "#9b59b6", width: 100, height: 100, targetX: 110, targetY: 180, svg: `<polygon points="50,0 100,100 0,100" fill="#9b59b6"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "retangulo", cor: "#f1c40f", width: 80, height: 20, targetX: 30, targetY: 260, svg: `<rect width="80" height="20" fill="#f1c40f"/>`, som: "tangram_peca_retangulo" }
+        ]
+      },
+      {
+        id: "Foguete", nome: "Foguete 🚀", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#e74c3c", width: 80, height: 60, targetX: 130, targetY: 40, svg: `<polygon points="40,0 80,60 0,60" fill="#e74c3c"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "retangulo", cor: "#ecf0f1", width: 80, height: 120, targetX: 130, targetY: 100, svg: `<rect width="80" height="120" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2"/>`, som: "tangram_peca_retangulo" },
+          { id: 3, tipo: "triangulo", cor: "#3498db", width: 40, height: 60, targetX: 90, targetY: 160, svg: `<polygon points="40,0 40,60 0,60" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "triangulo", cor: "#3498db", width: 40, height: 60, targetX: 210, targetY: 160, svg: `<polygon points="0,0 40,60 0,60" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "triangulo", cor: "#f1c40f", width: 60, height: 40, targetX: 140, targetY: 220, svg: `<polygon points="0,0 60,0 30,40" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" }
+        ]
+      },
+      {
+        id: "Arvore", nome: "Árvore 🌳", 
+        pecas: [
+          { id: 1, tipo: "retangulo", cor: "#8e44ad", width: 40, height: 100, targetX: 150, targetY: 180, svg: `<rect width="40" height="100" fill="#8e44ad"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "triangulo", cor: "#2ecc71", width: 140, height: 80, targetX: 100, targetY: 100, svg: `<polygon points="70,0 140,80 0,80" fill="#2ecc71"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "triangulo", cor: "#27ae60", width: 100, height: 70, targetX: 120, targetY: 30, svg: `<polygon points="50,0 100,70 0,70" fill="#27ae60"/>`, som: "tangram_peca_triangulo" }
+        ]
+      },
+      {
+        id: "Peixe", nome: "Peixinho 🐟", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#e67e22", width: 120, height: 120, targetX: 140, targetY: 100, svg: `<polygon points="0,60 120,0 120,120" fill="#e67e22"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "triangulo", cor: "#f1c40f", width: 80, height: 80, targetX: 60, targetY: 120, svg: `<polygon points="0,0 80,40 0,80" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "triangulo", cor: "#d35400", width: 40, height: 40, targetX: 160, targetY: 60, svg: `<polygon points="0,40 20,0 40,40" fill="#d35400"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "triangulo", cor: "#d35400", width: 40, height: 40, targetX: 160, targetY: 220, svg: `<polygon points="0,0 40,0 20,40" fill="#d35400"/>`, som: "tangram_peca_triangulo" }
+        ]
+      }
+    ];
+
+    let faseAtual = 0;
+    let pecasEncaixadas = 0;
+
+    function carregarJogo(iniciando = false) {
+      if (faseAtual >= FIGURAS.length) {
+        faseAtual = 0; // Reinicia se passar de todas
+      }
+      
+      const figura = FIGURAS[faseAtual];
+      document.getElementById('target-title').innerText = `Construa: ${figura.nome}`;
+      
+      const tray = document.getElementById('tray');
+      const dropZone = document.getElementById('dropZone');
+      tray.innerHTML = '';
+      dropZone.innerHTML = '';
+      pecasEncaixadas = 0;
+
+      // Fala inicial da fase
+      if(iniciando) {
+        falarMP3('tangram_intro');
+        setTimeout(() => falarMP3(`tangram_montar_${figura.id}`), 4000);
+      } else {
+        falarMP3(`tangram_montar_${figura.id}`);
+      }
+
+      // Embaralhar peças para a bandeja
+      const pecasEmbaralhadas = [...figura.pecas].sort(() => Math.random() - 0.5);
+
+      pecasEmbaralhadas.forEach(peca => {
+        // Peça solta
+        const el = document.createElement('div');
+        el.className = 'piece';
+        el.id = `piece-${peca.id}`;
+        el.innerHTML = `<svg width="${peca.width}" height="${peca.height}">${peca.svg}</svg>`;
+        el.onclick = () => tentarEncaixarDirecto(peca);
+        tray.appendChild(el);
+
+        // Slot
+        const slot = document.createElement('div');
+        slot.className = 'target-slot';
+        slot.id = `slot-${peca.id}`;
+        slot.style.width = peca.width + 'px';
+        slot.style.height = peca.height + 'px';
+        slot.style.left = peca.targetX + 'px';
+        slot.style.top = peca.targetY + 'px';
+        slot.innerHTML = `<svg width="${peca.width}" height="${peca.height}" style="opacity: 0.3;">${peca.svg}</svg>`;
+        dropZone.appendChild(slot);
+      });
+    }
+
+    function tentarEncaixarDirecto(peca) {
+      const pieceEl = document.getElementById(`piece-${peca.id}`);
+      const slotEl = document.getElementById(`slot-${peca.id}`);
+
+      if (!pieceEl || slotEl.classList.contains('filled')) return;
+
+      // Move a peça para o slot correto
+      slotEl.innerHTML = `<svg width="${peca.width}" height="${peca.height}">${peca.svg}</svg>`;
+      slotEl.classList.add('filled');
+      pieceEl.remove();
+
+      pecasEncaixadas++;
+
+      tocarSomEncaixe();
+      falarMP3(peca.som);
+
+      // Verifica vitória
+      const figura = FIGURAS[faseAtual];
+      if (pecasEncaixadas === figura.pecas.length) {
+        setTimeout(() => {
+          tocarSomVitoria();
+          falarMP3(`tangram_vitoria_${figura.id}`);
+          document.getElementById('textoCelebracao').innerHTML = `🎉 Parabéns!<br>Você formou ${figura.nome}!`;
+          
+          if(faseAtual === FIGURAS.length - 1) {
+            setTimeout(() => falarMP3('tangram_concluiu_tudo'), 3000);
+          }
+          
+          document.getElementById('celebracao').classList.add('active');
+        }, 800);
+      }
+    }
+
+    function avancarFase() {
+      document.getElementById('celebracao').classList.remove('active');
+      faseAtual++;
+      carregarJogo(false);
+    }
+
+    function reiniciarJogo() {
+      document.getElementById('celebracao').classList.remove('active');
+      faseAtual = 0;
+      carregarJogo(true);
+    }
+
+    // Inicializa
+    window.onload = () => carregarJogo(true);
+  </script>
+</body>
+</html>

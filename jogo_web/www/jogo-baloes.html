@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jogo dos Balões: Letras e Números</title>
+    <style>
+        :root { --bg-sky: #87CEEB; --primary: #FF5722; --secondary: #4CAF50; --text-dark: #333; --white: #ffffff; --shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; user-select: none; }
+        body { background-color: var(--bg-sky); color: var(--text-dark); display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; background-color: rgba(255,255,255,0.9); }
+        .screen.active { opacity: 1; pointer-events: auto; }
+        #game-screen { background-color: transparent; }
+        #splash-screen { background-color: var(--bg-sky); }
+        .splash-icon { font-size: 8rem; animation: float 2s infinite ease-in-out; }
+        .splash-title { font-size: 3rem; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin-top: 20px; }
+        h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 20px; text-align: center; }
+        p.subtitle { font-size: 1.5rem; margin-bottom: 30px; color: #555; text-align: center; }
+        .btn { background-color: var(--primary); color: white; border: none; padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 0 #E64A19; transition: all 0.1s ease; margin: 10px; font-weight: bold; min-width: 280px; }
+        .btn:active { transform: translateY(5px); box-shadow: 0 0 0 #E64A19; }
+        .btn-green { background-color: var(--secondary); box-shadow: 0 5px 0 #388E3C; }
+        .btn-green:active { box-shadow: 0 0 0 #388E3C; }
+        .btn-blue { background-color: #2196F3; box-shadow: 0 5px 0 #1976D2; }
+        .btn-blue:active { box-shadow: 0 0 0 #1976D2; }
+        .btn-yellow { background-color: #FFC107; box-shadow: 0 5px 0 #FFA000; color: #333; }
+        .btn-yellow:active { box-shadow: 0 0 0 #FFA000; }
+        .btn-purple { background-color: #9b59b6; box-shadow: 0 5px 0 #8e44ad; }
+        .btn-purple:active { box-shadow: 0 0 0 #8e44ad; }
+        .game-header { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: white; padding: 10px 30px; border-radius: 30px; box-shadow: var(--shadow); text-align: center; z-index: 5; min-width: 300px; }
+        .target-text { font-size: 2rem; color: var(--primary); font-weight: bold; }
+        .target-letter { font-size: 3rem; color: #9C27B0; }
+        .progress-stars { font-size: 1.5rem; margin-top: 5px; letter-spacing: 5px; }
+        #balloon-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .balloon { position: absolute; bottom: -150px; width: 90px; height: 110px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; box-shadow: inset -10px -10px 15px rgba(0,0,0,0.1); pointer-events: auto; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 4rem; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .balloon::before { content: ""; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid inherit; }
+        .balloon::after { content: ""; position: absolute; bottom: -60px; left: 50%; width: 2px; height: 50px; background: rgba(255,255,255,0.5); }
+        .explosion { position: absolute; width: 100px; height: 100px; transform: translate(-50%, -50%); pointer-events: none; background-image: radial-gradient(circle, white 20%, transparent 60%); border-radius: 50%; animation: explode 0.3s ease-out forwards; }
+        .confetti { position: absolute; width: 10px; height: 10px; animation: fall 3s linear forwards; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes floatUp { 0% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-60vh) translateX(20px); } 100% { transform: translateY(-120vh) translateX(-20px); } }
+        @keyframes explode { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
+        @keyframes fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .wrong-shake { animation: shake 0.3s ease-in-out !important; }
+        .btn-voltar { background: #95a5a6; box-shadow: 0 5px 0 #7f8c8d; width: 100%; max-width: 280px; }
+        .btn-voltar:active { box-shadow: 0 0 0 #7f8c8d; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen" class="screen active">
+        <div class="splash-icon">🎈</div>
+        <div class="splash-title">Jogo dos Balões</div>
+    </div>
+
+    <div id="menu-screen" class="screen">
+        <div class="splash-icon" style="font-size: 5rem; margin-bottom: 20px;">🎈✨</div>
+        <h1>Bem-vindo!</h1>
+        <p class="subtitle">Vamos estourar balões!</p>
+        <button class="btn btn-green" onclick="showScreen('level-screen'); tocarIntro()">▶️ Jogar</button>
+        <button class="btn btn-voltar" onclick="window.location.href='index.html'">🏠 Voltar ao Menu</button>
+    </div>
+
+    <div id="level-screen" class="screen">
+        <h1>Escolha o Nível</h1>
+        <button class="btn btn-blue" onclick="iniciarJogo('vogais')">Vogais (A, E, I, O, U)</button>
+        <button class="btn btn-yellow" onclick="iniciarJogo('consoantes')">Consoantes</button>
+        <button class="btn btn-green" onclick="iniciarJogo('alfabeto')">Alfabeto Completo</button>
+        <button class="btn btn-purple" onclick="iniciarJogo('numeros')">Números (0 a 9)</button>
+        <button class="btn btn-voltar" onclick="showScreen('menu-screen')">Voltar</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="game-header">
+            <div class="target-text" id="target-label">Estoure:</div>
+            <div class="target-letter" id="target-letter">A</div>
+            <div class="progress-stars" id="progress-stars">🤍🤍🤍🤍🤍</div>
+        </div>
+        <div id="balloon-container"></div>
+    </div>
+
+    <div id="victory-screen" class="screen">
+        <h1 style="font-size: 4rem;">Parabéns!</h1>
+        <div class="splash-icon" style="font-size: 5rem; margin-bottom: 20px;">🏆</div>
+        <p class="subtitle">Você estourou todos os balões corretos!</p>
+        <p style="font-size: 1.2rem; margin-bottom: 20px; font-weight: bold; color: #f39c12;">+5 Estrelas salvas!</p>
+        <button class="btn btn-green" onclick="showScreen('level-screen')">Jogar Novamente</button>
+        <button class="btn btn-voltar" onclick="window.location.href='index.html'">🏠 Voltar ao Menu</button>
+    </div>
+
+    <script>
+        const conteudos = {
+            vogais: ['A', 'E', 'I', 'O', 'U'],
+            consoantes: ['B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S','T','V','W','X','Y','Z'],
+            numeros: ['0','1','2','3','4','5','6','7','8','9'],
+            alfabeto: []
+        };
+        conteudos.alfabeto = [...conteudos.vogais, ...conteudos.consoantes];
+        const coresBaloes = ['#FF1744', '#00E676', '#2979FF', '#FFEA00', '#D500F9', '#FF9100'];
+
+        let nivelAtual = []; let alvoAtual = ''; let rodadaProgresso = 0; let rodadasTotal = 5;
+        let gameLoop; let bloquado = false; let tipoAtual = '';
+
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        
+        let currentAudio = null;
+        function tocarAudio(nome) {
+            if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+            currentAudio = new Audio('assets/audio/' + nome + '.mp3');
+            currentAudio.play().catch(e=>console.log(e));
+        }
+
+        function initAudio() {
+            if(!audioCtx) audioCtx = new AudioContext();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playPopSound() {
+            if(!audioCtx) return;
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        window.onload = () => { setTimeout(() => { showScreen('menu-screen'); }, 2500); };
+        
+        function tocarIntro() { tocarAudio('intro_fonfon'); }
+
+        function iniciarJogo(nivel) {
+            initAudio(); tipoAtual = nivel;
+            let banco = [...conteudos[nivel]].sort(() => Math.random() - 0.5);
+            nivelAtual = banco.slice(0, rodadasTotal);
+            rodadaProgresso = 0; bloquado = false;
+            document.getElementById('balloon-container').innerHTML = '';
+            
+            document.getElementById('target-label').innerText = (nivel === 'numeros') ? "Estoure o número:" : "Estoure a letra:";
+            
+            showScreen('game-screen');
+            proximaRodada();
+            
+            if(gameLoop) clearInterval(gameLoop);
+            gameLoop = setInterval(gerarBalao, 1500);
+        }
+
+        function atualizarEstrelas() {
+            let starsHTML = '';
+            for(let i = 0; i < rodadasTotal; i++) starsHTML += i < rodadaProgresso ? '⭐' : '🤍';
+            document.getElementById('progress-stars').innerHTML = starsHTML;
+        }
+
+        function proximaRodada() {
+            if (rodadaProgresso >= rodadasTotal) { vitoria(); return; }
+            alvoAtual = nivelAtual[rodadaProgresso];
+            document.getElementById('target-letter').innerText = alvoAtual;
+            atualizarEstrelas();
+            
+            let prefixAudio = (tipoAtual === 'numeros') ? 'instrucao_baloes_numeros' : 'instrucao_baloes_letras';
+            let targetAudio = (tipoAtual === 'numeros') ? 'numero_' + alvoAtual : 'letra_' + alvoAtual;
+            
+            setTimeout(() => {
+                tocarAudio(prefixAudio);
+                setTimeout(() => tocarAudio(targetAudio), 1200);
+            }, 500);
+        }
+
+        function gerarBalao() {
+            if(!document.getElementById('game-screen').classList.contains('active')) return;
+            const container = document.getElementById('balloon-container');
+            const balloon = document.createElement('div'); balloon.className = 'balloon';
+            
+            let charBalao = alvoAtual;
+            if(Math.random() > 0.4) {
+                let todos = conteudos[tipoAtual];
+                charBalao = todos[Math.floor(Math.random() * todos.length)];
+            }
+            
+            balloon.innerText = charBalao;
+            balloon.style.left = (10 + Math.random() * 80) + '%';
+            
+            const cor = coresBaloes[Math.floor(Math.random() * coresBaloes.length)];
+            balloon.style.backgroundColor = cor; balloon.style.borderBottomColor = cor;
+            
+            const duracao = 4 + Math.random() * 3;
+            balloon.style.animation = `floatUp ${duracao}s linear forwards`;
+            
+            balloon.onmousedown = (e) => clickBalao(e, balloon, charBalao);
+            balloon.ontouchstart = (e) => { e.preventDefault(); clickBalao(e.touches[0], balloon, charBalao); };
+
+            container.appendChild(balloon);
+            setTimeout(() => { if(balloon.parentNode) balloon.remove(); }, duracao * 1000);
+        }
+
+        function clickBalao(evento, balloonElement, char) {
+            if(bloquado) return;
+            if (char === alvoAtual) {
+                bloquado = true; playPopSound(); criarExplosao(evento.clientX, evento.clientY);
+                balloonElement.remove(); tocarAudio('acertou');
+                rodadaProgresso++; atualizarEstrelas();
+                
+                setTimeout(() => {
+                    document.getElementById('balloon-container').innerHTML = '';
+                    bloquado = false; proximaRodada();
+                }, 1500);
+            } else {
+                let targetAudio = (tipoAtual === 'numeros') ? 'numero_' + char : 'letra_' + char;
+                tocarAudio(targetAudio);
+                balloonElement.classList.add('wrong-shake');
+                setTimeout(() => balloonElement.classList.remove('wrong-shake'), 300);
+            }
+        }
+
+        function criarExplosao(x, y) {
+            const explosao = document.createElement('div'); explosao.className = 'explosion';
+            explosao.style.left = x + 'px'; explosao.style.top = y + 'px';
+            document.body.appendChild(explosao);
+            setTimeout(() => explosao.remove(), 300);
+        }
+
+        function vitoria() {
+            clearInterval(gameLoop); document.getElementById('balloon-container').innerHTML = '';
+            showScreen('victory-screen'); tocarAudio('vitoria_baloes'); gerarConfetes();
+            
+            let estrelasAtuais = parseInt(localStorage.getItem('jogador_estrelas')) || 0;
+            localStorage.setItem('jogador_estrelas', estrelasAtuais + rodadasTotal);
+        }
+
+        function gerarConfetes() {
+            const cores = ['#fce18a', '#ff726d', '#b48def', '#f4306d'];
+            for(let i=0; i<50; i++) {
+                const conf = document.createElement('div'); conf.className = 'confetti';
+                conf.style.left = (Math.random() * 100) + 'vw';
+                conf.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                conf.style.animationDuration = (2 + Math.random() * 3) + 's';
+                conf.style.animationDelay = (Math.random()) + 's';
+                document.getElementById('victory-screen').appendChild(conf);
+                setTimeout(() => conf.remove(), 5000);
+            }
+        }
+    </script>
+    <!-- Setas de Navegação -->
+    <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
+        <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='index.html'" title="Voltar ao Menu">⬅️</button>
+        <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='fon-fon.html'" title="Próximo Jogo">➡️</button>
+    </div>
+</body>
+</html>

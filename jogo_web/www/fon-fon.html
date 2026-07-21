@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fon-Fon: Aprenda Brincando!</title>
+    <style>
+        :root {
+            --bg-color: #f0f8ff;
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --text-dark: #2f3640;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; user-select: none; }
+        body { background-color: var(--bg-color); color: var(--text-dark); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { background-color: var(--white); border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 600px; padding: 30px; text-align: center; position: relative; overflow: hidden; }
+        h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 20px; text-shadow: 2px 2px 0px #ffeaa7; }
+        .mascot-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .owl { font-size: 5rem; animation: bounce 2s infinite ease-in-out; }
+        .speech-bubble { background: var(--secondary); color: white; padding: 15px 20px; border-radius: 20px; position: relative; margin-top: 10px; font-size: 1.2rem; max-width: 90%; box-shadow: var(--shadow); }
+        .speech-bubble::before { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); border-width: 0 10px 10px 10px; border-style: solid; border-color: transparent transparent var(--secondary) transparent; }
+        .btn { background-color: var(--primary); color: white; border: none; padding: 15px 30px; font-size: 1.5rem; border-radius: 50px; cursor: pointer; box-shadow: 0 5px 0 #d63031; transition: all 0.1s ease; margin: 10px; display: inline-flex; align-items: center; gap: 10px; }
+        .btn:active { transform: translateY(5px); box-shadow: 0 0 0 #d63031; }
+        .btn-secondary { background-color: var(--secondary); box-shadow: 0 5px 0 #1e824c; }
+        .btn-secondary:active { box-shadow: 0 0 0 #1e824c; }
+        .menu, .game-screen, .end-screen { display: none; }
+        .active { display: block; animation: fadeIn 0.5s ease; }
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+        .word-display { font-size: 4rem; margin: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .word-text { font-size: 2rem; color: var(--primary); font-weight: bold; }
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-top: 30px; }
+        .option-card { background: #fff; border: 3px solid #e0e0e0; border-radius: 15px; padding: 20px; font-size: 3rem; cursor: pointer; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .option-card:hover { transform: scale(1.05); border-color: var(--secondary); }
+        .option-text { font-size: 1.2rem; color: var(--text-dark); font-weight: bold; }
+        .progress-bar { display: flex; justify-content: center; gap: 5px; margin-bottom: 20px; }
+        .star { font-size: 1.5rem; color: #ddd; transition: color 0.3s; }
+        .star.filled { color: #f1c40f; animation: pop 0.3s ease; }
+        .btn-listen { background-color: #9b59b6; box-shadow: 0 5px 0 #8e44ad; font-size: 1.2rem; padding: 10px 20px; }
+        .btn-listen:active { box-shadow: 0 0 0 #8e44ad; }
+        .end-stars { font-size: 3rem; margin: 20px 0; min-height: 50px; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .wrong-shake { animation: shake 0.4s ease; border-color: var(--primary) !important; }
+        .correct-pop { animation: pop 0.4s ease; border-color: var(--secondary) !important; background-color: #e8f8f5; }
+        @media (min-width: 480px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } .menu-grid button:first-child { grid-column: span 2; } }
+        .btn-voltar { background: #95a5a6; box-shadow: 0 5px 0 #7f8c8d; margin-top: 15px; }
+        .btn-voltar:active { box-shadow: 0 0 0 #7f8c8d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu Inicial -->
+        <div id="menu" class="menu active">
+            <div class="mascot-area">
+                <div class="owl">🦉</div>
+                <div class="speech-bubble">Olá! Eu sou o Fon-Fon! Vamos brincar com as palavras? Escolha um jogo!</div>
+            </div>
+            <h1>Jogos do Fon-Fon</h1>
+            <div class="menu-grid">
+                <button class="btn" onclick="iniciarJogo('silabas')">👏 Sílabas</button>
+                <button class="btn btn-secondary" onclick="iniciarJogo('rimas')">🎵 Rimas</button>
+                <button class="btn btn-secondary" style="background-color: #f39c12; box-shadow: 0 5px 0 #d35400;" onclick="iniciarJogo('somInicial')">🔤 Som Inicial</button>
+            </div>
+            <button class="btn btn-voltar" style="width: 100%" onclick="window.location.href='index.html'">🏠 Voltar ao Menu</button>
+        </div>
+
+        <!-- Tela do Jogo -->
+        <div id="game" class="game-screen">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="mascot-area" style="flex-direction: row; gap: 15px;">
+                <div class="owl" style="font-size: 3rem;">🦉</div>
+                <div class="speech-bubble" id="instrucao">Aperte ouvir e escolha a resposta!</div>
+            </div>
+            <div class="word-display">
+                <span id="palavra-emoji"></span>
+                <span id="palavra-texto" class="word-text"></span>
+                <button class="btn btn-listen" onclick="ouvirPalavraAtual()">🔊 Ouvir</button>
+            </div>
+            <div class="options-grid" id="opcoes"></div>
+        </div>
+
+        <!-- Tela de Fim de Jogo -->
+        <div id="end" class="end-screen">
+            <div class="mascot-area">
+                <div class="owl">🦉✨</div>
+                <div class="speech-bubble">Você foi incrível! Muito bem!</div>
+            </div>
+            <h1>Fim da Rodada!</h1>
+            <div class="end-stars" id="end-stars">⭐⭐⭐⭐⭐⭐</div>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">Você ganhou <strong style="color:#f1c40f">+6 Estrelas!</strong></p>
+            <button class="btn" onclick="voltarMenu()">🏠 Voltar aos Mini-jogos</button>
+        </div>
+    </div>
+
+    <script>
+        // Bancos Ampliados
+        const bancos = {
+            silabas: [
+                { palavra: "Sol", audio: "p_Sol", silabas: 1, emoji: "☀️" },
+                { palavra: "Gato", audio: "p_Gato", silabas: 2, emoji: "🐱" },
+                { palavra: "Sapo", audio: "p_Sapo", silabas: 2, emoji: "🐸" },
+                { palavra: "Cachorro", audio: "p_Cachorro", silabas: 3, emoji: "🐶" },
+                { palavra: "Macaco", audio: "p_Macaco", silabas: 3, emoji: "🐒" },
+                { palavra: "Bicicleta", audio: "p_Bicicleta", silabas: 4, emoji: "🚲" },
+                { palavra: "Abacaxi", audio: "p_Abacaxi", silabas: 4, emoji: "🍍" },
+                { palavra: "Trem", audio: "p_Trem", silabas: 1, emoji: "🚂" },
+                { palavra: "Elefante", audio: "p_Elefante", silabas: 4, emoji: "🐘" },
+                { palavra: "Pé", audio: "p_Pe", silabas: 1, emoji: "🦶" },
+                { palavra: "Pipoca", audio: "p_Pipoca", silabas: 3, emoji: "🍿" },
+                { palavra: "Jacaré", audio: "p_Jacare", silabas: 3, emoji: "🐊" }
+            ],
+            rimas: [
+                { palavra: "Gato", audio: "p_Gato", emoji: "🐱", opcoes: [{t:"Rato", e:"🐭"}, {t:"Bolo", e:"🎂"}, {t:"Sapo", e:"🐸"}], correta: "Rato" },
+                { palavra: "Mão", audio: "p_Mao", emoji: "🖐️", opcoes: [{t:"Pão", e:"🍞"}, {t:"Pé", e:"🦶"}, {t:"Casa", e:"🏠"}], correta: "Pão" },
+                { palavra: "Fogo", audio: "p_Fogo", emoji: "🔥", opcoes: [{t:"Mesa", e:"🪑"}, {t:"Jogo", e:"🎮"}, {t:"Bola", e:"⚽"}], correta: "Jogo" },
+                { palavra: "Pato", audio: "p_Pato", emoji: "🦆", opcoes: [{t:"Mato", e:"🌿"}, {t:"Lobo", e:"🐺"}, {t:"Cama", e:"🛏️"}], correta: "Mato" },
+                { palavra: "Balão", audio: "p_Balao", emoji: "🎈", opcoes: [{t:"Sabão", e:"🧼"}, {t:"Carro", e:"🚗"}, {t:"Dedo", e:"☝️"}], correta: "Sabão" },
+                { palavra: "Janela", audio: "p_Janela", emoji: "🪟", opcoes: [{t:"Panela", e:"🥘"}, {t:"Rato", e:"🐭"}, {t:"Vaca", e:"🐄"}], correta: "Panela" },
+                { palavra: "Cola", audio: "p_Cola", emoji: "🧴", opcoes: [{t:"Bola", e:"⚽"}, {t:"Faca", e:"🔪"}, {t:"Urso", e:"🐻"}], correta: "Bola" },
+                { palavra: "Leão", audio: "p_Leao", emoji: "🦁", opcoes: [{t:"Mão", e:"🖐️"}, {t:"Saco", e:"🛍️"}, {t:"Vaso", e:"🏺"}], correta: "Mão" }
+            ],
+            somInicial: [
+                { palavra: "Bola", audio: "p_Bola", emoji: "⚽", opcoes: [{t:"Boca", e:"👄"}, {t:"Dedo", e:"☝️"}, {t:"Sapo", e:"🐸"}], correta: "Boca" },
+                { palavra: "Faca", audio: "p_Faca", emoji: "🔪", opcoes: [{t:"Mala", e:"🧳"}, {t:"Fada", e:"🧚‍♀️"}, {t:"Gato", e:"🐱"}], correta: "Fada" },
+                { palavra: "Macaco", audio: "p_Macaco", emoji: "🐒", opcoes: [{t:"Mala", e:"🧳"}, {t:"Pato", e:"🦆"}, {t:"Vaca", e:"🐄"}], correta: "Mala" },
+                { palavra: "Pato", audio: "p_Pato", emoji: "🦆", opcoes: [{t:"Pé", e:"🦶"}, {t:"Bolo", e:"🎂"}, {t:"Lobo", e:"🐺"}], correta: "Pé" },
+                { palavra: "Sapo", audio: "p_Sapo", emoji: "🐸", opcoes: [{t:"Gato", e:"🐱"}, {t:"Cama", e:"🛏️"}, {t:"Saco", e:"🛍️"}], correta: "Saco" },
+                { palavra: "Vaca", audio: "p_Vaca", emoji: "🐄", opcoes: [{t:"Vaso", e:"🏺"}, {t:"Rato", e:"🐭"}, {t:"Mão", e:"🖐️"}], correta: "Vaso" },
+                { palavra: "Zebra", audio: "p_Zebra", emoji: "🦓", opcoes: [{t:"Zero", e:"0️⃣"}, {t:"Leão", e:"🦁"}, {t:"Fogo", e:"🔥"}], correta: "Zero" }
+            ]
+        };
+
+        let jogoAtual = ''; let rodadaAtual = []; let indicePergunta = 0; let bloqueado = false;
+        const totalPerguntas = 6;
+        let currentAudio = null;
+
+        function tocarAudio(nome) {
+            if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+            currentAudio = new Audio('assets/audio/' + nome + '.mp3');
+            currentAudio.play().catch(e=>console.log(e));
+        }
+
+        function ouvirPalavraAtual() {
+            if (rodadaAtual[indicePergunta]) {
+                if (jogoAtual === 'somInicial') {
+                    const letra = rodadaAtual[indicePergunta].palavra.charAt(0).toUpperCase();
+                    tocarAudio(`letra_som_${letra}`);
+                } else {
+                    tocarAudio(rodadaAtual[indicePergunta].audio);
+                }
+            }
+        }
+
+        function misturar(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function iniciarJogo(tipo) {
+            jogoAtual = tipo; indicePergunta = 0; bloqueado = false;
+            let bancoMisturado = misturar([...bancos[tipo]]);
+            rodadaAtual = bancoMisturado.slice(0, totalPerguntas);
+            document.getElementById('menu').classList.remove('active'); document.getElementById('game').classList.add('active');
+            
+            let msgIntro = ""; let audioIntro = "";
+            if(tipo === 'silabas') { msgIntro = "Quantos pedacinhos tem a palavra?"; audioIntro = "instrucao_silabas"; }
+            if(tipo === 'rimas') { msgIntro = "Qual palavra rima com?"; audioIntro = "instrucao_rimas"; }
+            if(tipo === 'somInicial') { 
+                const letra = rodadaAtual[0].palavra.charAt(0).toUpperCase();
+                msgIntro = `Qual palavra começa com a letra ${letra}?`; 
+                audioIntro = `instrucao_som_${letra}`; 
+            }
+            
+            document.getElementById('instrucao').innerText = msgIntro;
+            tocarAudio(audioIntro);
+            
+            atualizarProgresso();
+            setTimeout(carregarPergunta, 2000);
+        }
+
+        function atualizarProgresso() {
+            let html = '';
+            for(let i=0; i<totalPerguntas; i++) html += `<span class="star ${i < indicePergunta ? 'filled' : ''}">⭐</span>`;
+            document.getElementById('progress-bar').innerHTML = html;
+        }
+
+        function carregarPergunta() {
+            bloqueado = false;
+            const pergunta = rodadaAtual[indicePergunta];
+            document.getElementById('palavra-emoji').innerText = pergunta.emoji;
+            document.getElementById('palavra-texto').innerText = pergunta.palavra;
+            
+            const divOpcoes = document.getElementById('opcoes'); divOpcoes.innerHTML = '';
+            if (jogoAtual === 'silabas') {
+                for(let i=1; i<=4; i++) {
+                    const palmas = "👏".repeat(i);
+                    divOpcoes.innerHTML += `<div class="option-card" onclick="verificarSilabas(${i}, this)"><div style="font-size: 2rem;">${palmas}</div><div class="option-text">${i}</div></div>`;
+                }
+            } else {
+                let opcoesMisturadas = misturar([...pergunta.opcoes]);
+                opcoesMisturadas.forEach(op => {
+                    divOpcoes.innerHTML += `<div class="option-card" onclick="verificarRimaSom('${op.t}', '${pergunta.correta}', this)"><div>${op.e}</div><div class="option-text">${op.t}</div></div>`;
+                });
+            }
+
+            if(jogoAtual === 'somInicial') {
+                const letra = pergunta.palavra.charAt(0).toUpperCase();
+                tocarAudio(`instrucao_som_${letra}`);
+                setTimeout(() => ouvirPalavraAtual(), 2500); // Toca a palavra depois da instrução
+            } else {
+                ouvirPalavraAtual();
+            }
+        }
+
+        function darFeedback(acertou, elemento) {
+            bloqueado = true;
+            if (acertou) {
+                elemento.classList.add('correct-pop');
+                document.getElementById('instrucao').innerText = "Muito bem! Você acertou!";
+                tocarAudio('acertou');
+            } else {
+                elemento.classList.add('wrong-shake');
+                document.getElementById('instrucao').innerText = "Errar também é aprender. Tente de novo!";
+                tocarAudio('errou');
+            }
+            setTimeout(() => {
+                indicePergunta++;
+                if (indicePergunta < totalPerguntas) {
+                    atualizarProgresso();
+                    if(jogoAtual === 'silabas') document.getElementById('instrucao').innerText = "Quantos pedacinhos tem a palavra?";
+                    else if(jogoAtual === 'rimas') document.getElementById('instrucao').innerText = "Qual palavra rima com?";
+                    else {
+                        const letra = rodadaAtual[indicePergunta].palavra.charAt(0).toUpperCase();
+                        document.getElementById('instrucao').innerText = `Qual palavra começa com a letra ${letra}?`;
+                    }
+                    carregarPergunta();
+                } else {
+                    finalizarJogo();
+                }
+            }, 2500);
+        }
+
+        function verificarSilabas(escolha, elemento) { if(bloqueado) return; darFeedback(escolha === rodadaAtual[indicePergunta].silabas, elemento); }
+        function verificarRimaSom(escolha, correta, elemento) { if(bloqueado) return; darFeedback(escolha === correta, elemento); }
+
+        function finalizarJogo() {
+            document.getElementById('game').classList.remove('active');
+            document.getElementById('end').classList.add('active');
+            tocarAudio('vitoria_rodada');
+            
+            let estrelasAtuais = parseInt(localStorage.getItem('jogador_estrelas')) || 0;
+            localStorage.setItem('jogador_estrelas', estrelasAtuais + 6);
+            
+            const stars = document.getElementById('end-stars'); stars.innerHTML = '';
+            for(let i=0; i<totalPerguntas; i++) { setTimeout(() => { stars.innerHTML += '⭐'; }, i * 300); }
+        }
+
+        function voltarMenu() {
+            document.getElementById('end').classList.remove('active');
+            document.getElementById('menu').classList.add('active');
+            document.getElementById('instrucao').innerText = "Escolha um jogo!";
+            tocarAudio('escolha_outro');
+        }
+    </script>
+    <!-- Setas de Navegação -->
+    <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
+        <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='index.html'" title="Voltar ao Menu">⬅️</button>
+        <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='tangram.html'" title="Próximo Jogo">➡️</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>O Show dos Sons - Jogo Fonético</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    body {
+      margin: 0;
+      padding: 15px;
+      font-family: 'Fredoka', 'Comic Sans MS', sans-serif;
+      background: radial-gradient(circle, #6c5ce7 0%, #a29bfe 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #ffeaa7;
+      margin: 5px 0;
+      font-size: 2.5rem;
+      text-shadow: 3px 3px #d63031;
+    }
+    .subtitulo {
+      font-size: 1.2rem;
+      color: #dfe6e9;
+      margin: 0;
+    }
+    .game-area {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 24px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #2d3436;
+      text-align: center;
+    }
+    .palco {
+      font-size: 4rem;
+      margin-bottom: 10px;
+      animation: bounce 2s infinite ease-in-out;
+    }
+    .instrucao-box {
+      width: 100%;
+      background: #e1f5fe;
+      border: 3px solid #03a9f4;
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #0277bd;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .pergunta {
+      font-size: 1.5rem;
+      color: #d63031;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .btn-audio {
+      background: #00cec9;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #00b894;
+      margin-top: 10px;
+      transition: transform 0.1s;
+    }
+    .btn-audio:active {
+      transform: translateY(5px);
+      box-shadow: 0 0 0 #00b894;
+    }
+    .opcoes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      width: 100%;
+    }
+    .opcao-card {
+      background: white;
+      border: 4px solid #dfe6e9;
+      border-radius: 20px;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .opcao-card:hover {
+      transform: scale(1.05);
+      border-color: #fdcb6e;
+    }
+    .opcao-card .emoji {
+      font-size: 4rem;
+      margin-bottom: 10px;
+    }
+    .opcao-card .texto {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .feedback-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .feedback-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .feedback-content {
+      background: white;
+      padding: 40px;
+      border-radius: 30px;
+      text-align: center;
+      animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .feedback-content h2 {
+      font-size: 2.5rem;
+      color: #00b894;
+      margin-top: 0;
+    }
+    .progress-bar {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    .star {
+      font-size: 1.5rem;
+      color: #ccc;
+    }
+    .star.filled {
+      color: #fdcb6e;
+      text-shadow: 0 0 5px #fdcb6e;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .wrong-shake {
+      animation: shake 0.4s;
+      border-color: #d63031 !important;
+      background: #ff7675 !important;
+      color: white;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎤 O Show dos Sons</h1>
+    <p class="subtitulo">Adivinhe qual palavra começa com o som!</p>
+  </header>
+
+  <div class="progress-bar" id="progress-bar"></div>
+
+  <div class="game-area">
+    <div class="palco">🎭</div>
+    
+    <div class="instrucao-box" id="boxInstrucao">
+      <span id="textoInstrucao"></span><br>
+      <button class="btn-audio" onclick="tocarInstrucaoAtual()">🔊 Ouvir Instrução</button>
+    </div>
+
+    <div class="pergunta" id="perguntaJogo"></div>
+
+    <div class="opcoes-grid" id="gridOpcoes"></div>
+  </div>
+
+  <div class="feedback-overlay" id="feedback">
+    <div class="feedback-content">
+      <h2>🎉 CORRETO!</h2>
+      <p id="textoFeedback" style="font-size: 1.5rem; color: #2d3436; font-weight: bold;"></p>
+      <div id="emojiFeedback" style="font-size: 5rem; margin: 20px 0;"></div>
+      <button class="btn-audio" style="font-size: 1.5rem;" onclick="proximaFase()">Próximo Show 🌟</button>
+    </div>
+  </div>
+
+  <!-- Setas de Navegação -->
+  <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
+      <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='index.html'" title="Voltar ao Menu">⬅️</button>
+      <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='jogo-baloes.html'" title="Próximo Jogo">➡️</button>
+  </div>
+
+  <script>
+    const FASES = [
+      {
+        letra: "B",
+        instrucao_voz: "A primeira letra junta os lábios e faz um estalo: Bâ!",
+        pergunta: "Qual destes desenhos começa com o som Bâ?",
+        opcoes: [
+          { texto: "Maçã", emoji: "🍏", correta: false },
+          { texto: "Balão", emoji: "🎈", correta: true, feedback: "B-b-balão! Muito bem!" },
+          { texto: "Gato", emoji: "🐱", correta: false }
+        ]
+      },
+      {
+        letra: "F",
+        instrucao_voz: "Coloque os dentes no lábio inferior e sopre fazendo: Fffff!",
+        pergunta: "Qual destes desenhos começa com o som Ffff?",
+        opcoes: [
+          { texto: "Faca", emoji: "🔪", correta: true, feedback: "F-f-faca! Excelente!" },
+          { texto: "Bola", emoji: "⚽", correta: false },
+          { texto: "Dedo", emoji: "☝️", correta: false }
+        ]
+      },
+      {
+        letra: "M",
+        instrucao_voz: "Junte os lábios e faça um som pelo nariz: Hummmmm!",
+        pergunta: "Qual destes desenhos começa com o som Hummm?",
+        opcoes: [
+          { texto: "Pato", emoji: "🦆", correta: false },
+          { texto: "Casa", emoji: "🏠", correta: false },
+          { texto: "Macaco", emoji: "🐵", correta: true, feedback: "M-m-macaco! Perfeito!" }
+        ]
+      },
+      {
+        letra: "S",
+        instrucao_voz: "Junte os dentes e faça o som da cobrinha: Sssss!",
+        pergunta: "Qual destes desenhos começa com o som Ssss?",
+        opcoes: [
+          { texto: "Sapo", emoji: "🐸", correta: true, feedback: "S-s-sapo! Isso mesmo!" },
+          { texto: "Leão", emoji: "🦁", correta: false },
+          { texto: "Vaca", emoji: "🐄", correta: false }
+        ]
+      },
+      {
+        letra: "V",
+        instrucao_voz: "Coloque os dentes no lábio inferior, sopre e sinta vibrar: Vvvvv!",
+        pergunta: "Qual destes desenhos começa com o som Vvvv?",
+        opcoes: [
+          { texto: "Rato", emoji: "🐭", correta: false },
+          { texto: "Vaca", emoji: "🐄", correta: true, feedback: "V-v-vaca! Que incrível!" },
+          { texto: "Galo", emoji: "🐓", correta: false }
+        ]
+      }
+    ];
+
+    let faseAtual = 0;
+    let bloqueado = false;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let currentAudio = null;
+
+    function tocarAudioMp3(nome, onEndCallback = null) {
+      if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      currentAudio = new Audio(`assets/audio/show/${nome}.mp3`);
+      
+      if (onEndCallback) {
+          currentAudio.onended = onEndCallback;
+      }
+      
+      currentAudio.play().catch(e => console.log('Áudio não encontrado:', e));
+    }
+
+    function tocarSomEfeito(tipo) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      if (tipo === 'acerto') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      } else {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      }
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function renderizarProgresso() {
+      const pb = document.getElementById('progress-bar');
+      pb.innerHTML = '';
+      for (let i = 0; i < FASES.length; i++) {
+        pb.innerHTML += `<span class="star ${i < faseAtual ? 'filled' : ''}">⭐</span>`;
+      }
+    }
+
+    function embaralhar(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function carregarFase() {
+      if (faseAtual >= FASES.length) {
+        document.getElementById('feedback').classList.add('active');
+        document.querySelector('.feedback-content h2').innerText = "🏆 CAMPEÃO!";
+        document.getElementById('textoFeedback').innerText = "Você completou o Show dos Sons!";
+        document.getElementById('emojiFeedback').innerText = "🥇";
+        tocarAudioMp3('final');
+        return;
+      }
+
+      bloqueado = false;
+      const fase = FASES[faseAtual];
+      
+      renderizarProgresso();
+      document.getElementById('textoInstrucao').innerText = fase.instrucao_voz;
+      document.getElementById('perguntaJogo').innerText = fase.pergunta;
+
+      const grid = document.getElementById('gridOpcoes');
+      grid.innerHTML = '';
+      
+      const opcoesEmbaralhadas = embaralhar([...fase.opcoes]);
+      
+      opcoesEmbaralhadas.forEach((op, index) => {
+        const isCorreta = op.correta ? 'true' : 'false';
+        grid.innerHTML += `
+          <div class="opcao-card" onclick="verificarResposta(this, ${isCorreta}, '${op.feedback || ''}', '${op.texto}', '${op.emoji}')">
+            <span class="emoji">${op.emoji}</span>
+            <span class="texto">${op.texto}</span>
+          </div>
+        `;
+      });
+
+      // Toca a instrução ao entrar na fase
+      setTimeout(() => tocarInstrucaoAtual(), 500);
+    }
+
+    function tocarInstrucaoAtual() {
+      const fase = FASES[faseAtual];
+      tocarAudioMp3(`instrucao_${fase.letra}_parte1`, () => {
+          // Depois de falar a articulação da boca, toca o fonema puro gravado pelo usuário!
+          const letterAudio = new Audio(`assets/audio/fonetico/${fase.letra}.mp3`);
+          currentAudio = letterAudio; // salva no currentAudio para poder ser pausado se o jogador clicar em algo
+          letterAudio.play().catch(e => console.log('Faltando o arquivo do fonema:', fase.letra));
+      });
+    }
+
+    function verificarResposta(elemento, correta, feedback, textoOpcao, emoji) {
+      if (bloqueado) return;
+      
+      if (correta) {
+        bloqueado = true;
+        tocarSomEfeito('acerto');
+        elemento.style.borderColor = '#00b894';
+        elemento.style.background = '#e6fffa';
+        
+        setTimeout(() => {
+          document.getElementById('feedback').classList.add('active');
+          document.getElementById('textoFeedback').innerText = feedback;
+          document.getElementById('emojiFeedback').innerText = emoji;
+          tocarAudioMp3(`feedback_${FASES[faseAtual].letra}`);
+        }, 500);
+      } else {
+        tocarSomEfeito('erro');
+        elemento.classList.add('wrong-shake');
+        tocarAudioMp3('erro');
+        setTimeout(() => elemento.classList.remove('wrong-shake'), 400);
+      }
+    }
+
+    function proximaFase() {
+      if (faseAtual >= FASES.length) {
+        window.location.href = 'index.html'; // Volta pro menu ao terminar tudo
+        return;
+      }
+      document.getElementById('feedback').classList.remove('active');
+      faseAtual++;
+      carregarFase();
+    }
+
+    window.onload = () => {
+      // Necessário um toque inicial do usuário para liberar o áudio na web, 
+      // mas como eles já navegam de uma página pra outra, geralmente já está liberado.
+      carregarFase();
+    };
+  </script>
+</body>
+</html>

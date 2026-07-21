@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Komunic - O Guardião dos Sons</title>
+  <style>
+    :root {
+      --primary-color: #4A90E2;
+      --bg-color: #F4F7F6;
+      --card-bg: #FFFFFF;
+      --text-color: #2C3E50;
+      --correct-color: #2ECC71;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 5px;
+      color: var(--primary-color);
+    }
+
+    .instructions {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    /* Botão de Som Grande e Acessível */
+    .sound-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background-color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0 30px 0;
+    }
+
+    .sound-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .sound-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Container dos Cards */
+    .cards-container {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 4px solid #E0E0E0;
+      border-radius: 20px;
+      width: 150px;
+      height: 150px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .card .icon {
+      font-size: 4rem;
+      margin-bottom: 10px;
+    }
+
+    .card .label {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* Animação para Resposta Correta */
+    .card.correct {
+      border-color: var(--correct-color);
+      background-color: #E8F8F5;
+      animation: pulse 0.6s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* Mensagem de Feedback Acessível */
+    .feedback {
+      margin-top: 30px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      min-height: 40px;
+      color: var(--correct-color);
+    }
+
+    .next-btn {
+      margin-top: 15px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      background-color: var(--correct-color);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    .next-btn:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Komunic 🔊</h1>
+    <p class="instructions">Escute o som e descubra qual figura começa com ele!</p>
+  </header>
+
+  <!-- Botão principal para ouvir o som da letra -->
+  <button class="sound-btn" id="play-sound-btn" onclick="playCurrentSound()">
+    🔊 Ouvir o Som
+  </button>
+
+  <!-- Opções do jogo -->
+  <div class="cards-container" id="cards-container"></div>
+
+  <!-- Área de feedback / próxima fase -->
+  <div class="feedback" id="feedback"></div>
+  <button class="next-btn" id="next-btn" onclick="nextRound()">Próxima Fase ➡️</button>
+
+  <!-- Setas de Navegação -->
+  <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
+      <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='show-dos-sons.html'" title="Jogo Anterior">⬅️</button>
+      <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='jogo-baloes.html'" title="Próximo Jogo">➡️</button>
+  </div>
+
+  <script>
+    // Dados do jogo: Letra target (usada para carregar o MP3), e Opções visuais
+    const gameData = [
+      {
+        targetSound: "F",
+        options: [
+          { name: "Foca", icon: "🦭", correct: true },
+          { name: "Sapo", icon: "🐸", correct: false },
+          { name: "Gato", icon: "🐱", correct: false }
+        ]
+      },
+      {
+        targetSound: "S",
+        options: [
+          { name: "Bola", icon: "⚽", correct: false },
+          { name: "Sapo", icon: "🐸", correct: true },
+          { name: "Vaca", icon: "🐮", correct: false }
+        ]
+      },
+      {
+        targetSound: "M",
+        options: [
+          { name: "Pato", icon: "🦆", correct: false },
+          { name: "Lobo", icon: "🐺", correct: false },
+          { name: "Macaco", icon: "🐒", correct: true }
+        ]
+      }
+    ];
+
+    let currentRound = 0;
+    let canClick = true;
+    let currentAudio = null;
+
+    // Toca os áudios gravados de feedback (palavras inteiras)
+    function playWordAudio(name, type) {
+      if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      
+      let fileName = '';
+      if (type === 'correct') {
+          // ex: muitobem_foca.mp3
+          fileName = `muitobem_${name.toLowerCase()}`;
+      } else if (type === 'wrong') {
+          // ex: sapo.mp3
+          fileName = name.toLowerCase();
+      } else if (type === 'final') {
+          fileName = 'vitoria_guardiao';
+      }
+      
+      currentAudio = new Audio(`assets/audio/guardiao/${fileName}.mp3`);
+      currentAudio.play().catch(e => console.log('Áudio MP3 não encontrado:', e));
+    }
+
+    // Toca o som puro/fonema da rodada atual usando os arquivos MP3 gravados
+    function playCurrentSound() {
+      const data = gameData[currentRound];
+      if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      
+      // Toca primeiro a instrução (Ouça o som...)
+      currentAudio = new Audio(`assets/audio/guardiao/instrucao_guardiao.mp3`);
+      currentAudio.play().catch(e => console.log('Áudio da instrução não encontrado'));
+      
+      currentAudio.onended = () => {
+          // Quando a instrução terminar, toca o som da letra (ex: F.mp3)
+          const letterAudio = new Audio(`assets/audio/fonetico/${data.targetSound}.mp3`);
+          letterAudio.play().catch(e => {
+              console.log('Faltando o arquivo:', data.targetSound + '.mp3');
+          });
+      };
+    }
+
+    // Carrega os elementos da rodada na tela
+    function loadRound() {
+      canClick = true;
+      const data = gameData[currentRound];
+      const container = document.getElementById('cards-container');
+      const feedback = document.getElementById('feedback');
+      const nextBtn = document.getElementById('next-btn');
+
+      container.innerHTML = '';
+      feedback.textContent = '';
+      nextBtn.style.display = 'none';
+
+      // Embaralhar as opções para não ficarem sempre na mesma ordem
+      const shuffledOptions = [...data.options].sort(() => Math.random() - 0.5);
+
+      shuffledOptions.forEach(opt => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="icon">${opt.icon}</div>
+          <div class="label">${opt.name}</div>
+        `;
+        card.onclick = () => checkAnswer(card, opt);
+        container.appendChild(card);
+      });
+
+      // Toca o som automaticamente ao iniciar a fase
+      setTimeout(playCurrentSound, 500);
+    }
+
+    // Valida a escolha da criança
+    function checkAnswer(cardElement, option) {
+      if (!canClick) return;
+
+      if (option.correct) {
+        canClick = false;
+        cardElement.classList.add('correct');
+        playWordAudio(option.name, 'correct');
+        document.getElementById('feedback').textContent = "✨ Muito bem! ✨";
+        document.getElementById('next-btn').style.display = 'inline-block';
+      } else {
+        // Feedback suave sem som estridente ou mensagem negativa
+        playWordAudio(option.name, 'wrong');
+        cardElement.style.opacity = "0.5";
+        setTimeout(() => {
+          cardElement.style.opacity = "1";
+        }, 800);
+      }
+    }
+
+    // Avança para a próxima rodada
+    function nextRound() {
+      currentRound++;
+      if (currentRound >= gameData.length) {
+          // Voltar ao começo ou menu
+          document.getElementById('feedback').textContent = "🎉 Você venceu todos os desafios!";
+          document.getElementById('next-btn').style.display = 'none';
+          document.getElementById('cards-container').innerHTML = '';
+          playWordAudio('', 'final');
+          setTimeout(() => window.location.href = 'index.html', 4000);
+          return;
+      }
+      loadRound();
+    }
+
+    // Inicializa o jogo ao carregar a página
+    window.onload = loadRound;
+  </script>
+</body>
+</html>

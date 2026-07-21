@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>As Letras Tem Som - Som Fonético Puro</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    body {
+      margin: 0;
+      padding: 15px;
+      font-family: 'Fredoka', 'Comic Sans MS', sans-serif;
+      background: linear-gradient(135deg, #a8edda 0%, #fed6e3 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    h1 {
+      color: #00b894;
+      margin: 5px 0;
+      font-size: 2.2rem;
+      text-shadow: 2px 2px #fff;
+    }
+    .subtitulo {
+      font-size: 1.1rem;
+      color: #2d3436;
+      margin: 0;
+      font-weight: bold;
+    }
+    .mode-tabs {
+      display: flex;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .tab-btn {
+      padding: 12px 22px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 25px;
+      background: white;
+      color: #555;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #00b894;
+      color: white;
+      transform: scale(1.05);
+    }
+    .game-area {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 24px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+      max-width: 850px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .desafio-box {
+      width: 100%;
+      background: #e6fffa;
+      border: 3px dashed #00b894;
+      border-radius: 16px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .desafio-box.active {
+      display: block;
+    }
+    .btn-audio {
+      background: #ff7675;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #d63031;
+      margin-top: 8px;
+    }
+    .btn-audio:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #d63031;
+    }
+    .letters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 12px;
+      width: 100%;
+    }
+    .letter-card {
+      background: white;
+      border: 3px solid #dfe6e9;
+      border-radius: 18px;
+      padding: 12px 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .letter-card:hover {
+      transform: translateY(-4px);
+      border-color: #00b894;
+    }
+    .letter-card .char {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #2d3436;
+    }
+    .letter-card .icone {
+      font-size: 1.5rem;
+      margin-top: 4px;
+    }
+    .celebracao {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(255, 255, 255, 0.94);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .celebracao.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .celebracao h2 {
+      font-size: 2.5rem;
+      color: #00b894;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🔤 As Letras Tem Som</h1>
+    <p class="subtitulo">Som FONÉTICO puro de cada letra (sem o nome dela!)</p>
+  </header>
+
+  <div class="mode-tabs">
+    <button class="tab-btn active" id="btnExplorar" onclick="setModo('explorar')">🔍 Explorar Fonemas</button>
+    <button class="tab-btn" id="btnDesafio" onclick="setModo('desafio')">🎯 Adivinhe o Som</button>
+  </div>
+  
+  <div style="text-align: center; margin: 15px 0;">
+    <button class="btn-audio" id="btnSequencia" onclick="tocarSequenciaCompleta()" style="background-color: #9b59b6; padding: 12px 30px; font-size: 1.3rem;">
+      ▶️ Ouvir Sequência Completa
+    </button>
+  </div>
+
+  <div class="game-area">
+    <div class="desafio-box" id="desafioBox">
+      <span id="textoDesafio" style="font-size: 1.3rem; font-weight: bold; color: #00b894;">Qual letra faz este som?</span><br>
+      <button class="btn-audio" onclick="tocarSomDesafio()">🔊 Ouvir o Fonema</button>
+    </div>
+
+    <div class="letters-grid" id="gridLetras"></div>
+  </div>
+
+  <div class="celebracao" id="celebracao">
+    <h2>🎉 MUITO BEM!<br>Você acertou o som da letra!</h2>
+    <button class="btn-audio" onclick="proximoDesafio()">Próximo Som 🌟</button>
+  </div>
+
+  <!-- Setas de Navegação -->
+  <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
+      <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='index.html'" title="Voltar ao Menu">⬅️</button>
+      <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='fon-fon.html'" title="Próximo Jogo">➡️</button>
+  </div>
+
+  <script>
+    // Tabela estritamente focada na pronúncia do som fonético (fonema) sem o nome da letra
+    const ALFABETO_FONETICO = [
+      { letra: 'A', icone: '✈️', somFonetico: 'Aaaa' },
+      { letra: 'B', icone: '🪀', somFonetico: 'Bâ' },
+      { letra: 'C', icone: '🐶', somFonetico: 'Câ' },
+      { letra: 'D', icone: '🎲', somFonetico: 'Dâ' },
+      { letra: 'E', icone: '🐘', somFonetico: 'Êeee' },
+      { letra: 'F', icone: '🐱', somFonetico: 'Fff' },
+      { letra: 'G', icone: '🐱', somFonetico: 'Gâ' },
+      { letra: 'H', icone: '🚁', somFonetico: '(Mudo)' },
+      { letra: 'I', icone: '🏝️', somFonetico: 'Iiii' },
+      { letra: 'J', icone: '🐊', somFonetico: 'Jjjj' },
+      { letra: 'L', icone: '🦁', somFonetico: 'Lll' },
+      { letra: 'M', icone: '🐵', somFonetico: 'Hummmm' },
+      { letra: 'N', icone: '☁️', somFonetico: 'Nnnn' },
+      { letra: 'O', icone: '🥚', somFonetico: 'Óooo' },
+      { letra: 'P', icone: '🦆', somFonetico: 'Pâ' },
+      { letra: 'R', icone: '🤖', somFonetico: 'Rrrr' },
+      { letra: 'S', icone: '☀️', somFonetico: 'Ssss' },
+      { letra: 'T', icone: '🐯', somFonetico: 'Tâ' },
+      { letra: 'U', icone: '🍇', somFonetico: 'Uuuu' },
+      { letra: 'V', icone: '🐮', somFonetico: 'Vvvv' },
+      { letra: 'Z', icone: '🦓', somFonetico: 'Zzzz' }
+    ];
+
+    let modoAtual = 'explorar';
+    let letraSorteada = null;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let currentAudio = null;
+    let isTocandoSequencia = false;
+
+    function tocarSequenciaCompleta() {
+      if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      
+      const btn = document.getElementById('btnSequencia');
+      if (isTocandoSequencia) {
+        // Se já está tocando, o botão serve para pausar
+        isTocandoSequencia = false;
+        btn.innerHTML = "▶️ Ouvir Sequência Completa";
+        return;
+      }
+      
+      isTocandoSequencia = true;
+      btn.innerHTML = "⏸️ Pausar Sequência";
+      
+      currentAudio = new Audio('assets/audio/alfabeto_completo.ogg');
+      currentAudio.onended = () => {
+        isTocandoSequencia = false;
+        btn.innerHTML = "▶️ Ouvir Sequência Completa";
+      };
+      
+      currentAudio.play().catch(e => {
+        console.log('Erro ao tocar sequência:', e);
+        isTocandoSequencia = false;
+        btn.innerHTML = "▶️ Ouvir Sequência Completa";
+      });
+    }
+
+    function falarSomFonetico(letra) {
+      if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+      
+      // Reseta o botão de sequência caso estivesse tocando
+      isTocandoSequencia = false;
+      document.getElementById('btnSequencia').innerHTML = "▶️ Ouvir Sequência Completa";
+
+      currentAudio = new Audio(`assets/audio/fonetico/${letra}.mp3`);
+      currentAudio.play().catch(e => console.log('Áudio não encontrado ou bloqueado:', e));
+    }
+
+    function falarTexto(texto) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang = 'pt-BR';
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+      }
+    }
+
+    function tocarSomVitoria() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const notas = [261.63, 329.63, 392.00, 523.25];
+      notas.forEach((freq, i) => {
+        setTimeout(() => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.25);
+        }, i * 120);
+      });
+    }
+
+    function renderizarGrid() {
+      const grid = document.getElementById('gridLetras');
+      grid.innerHTML = ALFABETO_FONETICO.map(item => `
+        <div class="letter-card" onclick="cliqueLetra('${item.letra}')">
+          <span class="char">${item.letra}</span>
+          <span class="icone">${item.icone}</span>
+        </div>
+      `).join('');
+    }
+
+    function setModo(modo) {
+      modoAtual = modo;
+      document.getElementById('btnExplorar').classList.toggle('active', modo === 'explorar');
+      document.getElementById('btnDesafio').classList.toggle('active', modo === 'desafio');
+      document.getElementById('desafioBox').classList.toggle('active', modo === 'desafio');
+
+      if (modo === 'desafio') {
+        iniciarDesafio();
+      } else {
+        falarTexto("Toque em uma letra para ouvir o som fonético.");
+      }
+    }
+
+    function cliqueLetra(letra) {
+      const item = ALFABETO_FONETICO.find(x => x.letra === letra);
+      if (!item) return;
+
+      if (modoAtual === 'explorar') {
+        falarSomFonetico(item.letra);
+      } else if (modoAtual === 'desafio') {
+        if (letra === letraSorteada.letra) {
+          tocarSomVitoria();
+          document.getElementById('celebracao').classList.add('active');
+        } else {
+          falarTexto("Tente de novo.");
+        }
+      }
+    }
+
+    function iniciarDesafio() {
+      letraSorteada = ALFABETO_FONETICO[Math.floor(Math.random() * ALFABETO_FONETICO.length)];
+      tocarSomDesafio();
+    }
+
+    function tocarSomDesafio() {
+      if (letraSorteada) {
+        falarSomFonetico(letraSorteada.letra);
+      }
+    }
+
+    function proximoDesafio() {
+      document.getElementById('celebracao').classList.remove('active');
+      iniciarDesafio();
+    }
+
+    window.onload = () => {
+      renderizarGrid();
+    };
+  </script>
+</body>
+</html>
