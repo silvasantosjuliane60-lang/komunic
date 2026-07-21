@@ -8,7 +8,6 @@ export const TRACKS = [
     subtitle: 'Foco na visão, escuta e lógica! Sem precisar ler.',
     color: ['#4CAF50', '#2E7D32'],
     games: [
-      { id: 15, path: '/games/festa_numeros', title: 'FESTA DOS NÚMEROS', color: ['#FF9800', '#EF6C00'], stars: 0, emoji: '🔢' },
       { id: 9, path: '/games/sombras', title: 'JOGO DAS SOMBRAS', color: ['#424242', '#212121'], stars: 0, emoji: '👤' },
       { id: 7, path: '/games/formas', title: 'CASTELO DAS FORMAS', color: ['#FF9800', '#F57C00'], stars: 0, emoji: '🔺' },
       { id: 16, path: '/games/fonico', title: 'ALFABETO FONÊMICO', color: ['#8A2387', '#E94057'], stars: 0, emoji: '🔤' },
@@ -31,7 +30,6 @@ export const TRACKS = [
       { id: 8, path: '/games/fonico', title: 'LABORATÓRIO DOS SONS', color: ['#8A2387', '#E94057'], stars: 0, emoji: '🎵' },
       { id: 10, path: '/games/rimas', title: 'OFICINA DE RIMAS', color: ['#E91E63', '#C2185B'], stars: 0, emoji: '🛠️' },
       { id: 1, path: '/games/letras', title: 'VILA DAS LETRAS', color: Colors.blueButtonGradient, stars: 3, emoji: '🔤' },
-      { id: 12, path: '/games/festa_alfabeto', title: 'FESTA DO ALFABETO', color: ['#FF5252', '#D32F2F'], stars: 0, emoji: '🎈' },
       { id: 2, path: '/games/vogais', title: 'JARDIM DAS VOGAIS', color: Colors.playButtonGradient, stars: 2, emoji: '🌷' },
       { id: 18, path: '/games/raciocinio?track=2', title: 'DESAFIO LÓGICO 2', color: ['#3F51B5', '#1A237E'], stars: 0, emoji: '🧠' },
       { id: 22, path: '/games/matematica?track=2', title: 'DESAFIO MATEMÁTICO 2', color: ['#009432', '#12CBC4'], stars: 0, emoji: '🧮' },
