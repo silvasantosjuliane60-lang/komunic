@@ -2,10 +2,12 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AccessibilityProvider } from '../contexts/AccessibilityContext';
+import { AuthProvider } from '../contexts/AuthContext';
 
 export default function RootLayout() {
   return (
-    <AccessibilityProvider>
+    <AuthProvider>
+      <AccessibilityProvider>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -24,6 +26,7 @@ export default function RootLayout() {
         <Stack.Screen name="caa_board/desenho" options={{ title: 'Folha Mágica', headerShown: false, headerStyle: { backgroundColor: '#4CAF50' } }} />
         <Stack.Screen name="caa_board/prancha" options={{ title: 'Prancha de Comunicação', headerShown: false, headerStyle: { backgroundColor: '#E91E63' } }} />
       </Stack>
-    </AccessibilityProvider>
+      </AccessibilityProvider>
+    </AuthProvider>
   );
 }

@@ -1,11 +1,13 @@
 // @ts-nocheck
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Dimensions, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
+import { Redirect, useRouter } from 'expo-router';
+import { useAuth } from '../contexts/AuthContext';
 import { Colors } from '../constants/Colors';
-import { useRouter } from 'expo-router';
 import { useAccessibility } from '../contexts/AccessibilityContext';
 import { useAudio } from '../hooks/useAudio';
 
@@ -29,8 +31,12 @@ const GlossyButton = ({ colors, iconName, label, onPress, size = 'normal' }) => 
 
 export default function HomeLandscape() {
   const router = useRouter();
+  const { user, isLoading, logout } = useAuth();
   const { isLibrasActive, toggleLibras } = useAccessibility();
   const { playSuccess } = useAudio();
+
+  if (isLoading) return <View style={styles.background} />;
+  if (!user) return <Redirect href="/(auth)/login" />;
 
   return (
     <ImageBackground 
@@ -43,14 +49,14 @@ export default function HomeLandscape() {
       {/* ================= TOPO (HUD) ================= */}
       <SafeAreaView edges={["top"]} style={styles.header}>
         {/* Esquerda: Avatar */}
-        <View style={styles.avatarContainer}>
+        <TouchableOpacity style={styles.avatarContainer} onPress={logout}>
           <View style={styles.avatarCircle}>
-             <Ionicons name="hardware-chip" size={30} color={Colors.blueButtonGradient[1]} />
+             <Text style={{fontSize: 30}}>{user.avatar || '👤'}</Text>
           </View>
           <View style={styles.speechBubble}>
-            <Text style={styles.speechText}>Olá! Eu sou o Komu! Vamos aprender brincando?</Text>
+            <Text style={styles.speechText}>Olá, {user.name}! Sair</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Centro: Título Principal */}
         <View style={styles.titleContainer}>
