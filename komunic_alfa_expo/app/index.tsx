@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
-import { Redirect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Colors } from '../constants/Colors';
 import { useAccessibility } from '../contexts/AccessibilityContext';
@@ -36,7 +36,6 @@ export default function HomeLandscape() {
   const { playSuccess } = useAudio();
 
   if (isLoading) return <View style={styles.background} />;
-  if (!user) return <Redirect href="/(auth)/login" />;
 
   return (
     <ImageBackground 
@@ -48,13 +47,15 @@ export default function HomeLandscape() {
       
       {/* ================= TOPO (HUD) ================= */}
       <SafeAreaView edges={["top"]} style={styles.header}>
-        {/* Esquerda: Avatar */}
-        <TouchableOpacity style={styles.avatarContainer} onPress={logout}>
+        {/* Esquerda: Avatar (Leva para login se não estiver logado) */}
+        <TouchableOpacity style={styles.avatarContainer} onPress={() => user ? logout() : router.push('/(auth)/login')}>
           <View style={styles.avatarCircle}>
-             <Text style={{fontSize: 30}}>{user.avatar || '👤'}</Text>
+             <Text style={{fontSize: 30}}>{user ? user.avatar : '👤'}</Text>
           </View>
           <View style={styles.speechBubble}>
-            <Text style={styles.speechText}>Olá, {user.name}! Sair</Text>
+            <Text style={styles.speechText}>
+              {user ? `Olá, ${user.name}! Sair` : 'Entrar / Criar Perfil'}
+            </Text>
           </View>
         </TouchableOpacity>
 

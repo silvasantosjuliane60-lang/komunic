@@ -9,11 +9,9 @@ export default function LoginScreen() {
   const router = useRouter();
   const { usersList, login, isLoading } = useAuth();
 
-  const handleChildLogin = async (id: string, secret?: string) => {
-    // Aqui no futuro poderia abrir um modal para a criança clicar na "senha" dela.
-    // Mas para simplificar o protótipo, vamos deixar entrar direto ou pedir os 3 bichos.
-    // Vamos fazer o bypass por enquanto.
-    const success = await login(id, secret);
+  const handleChildLogin = async (id: string) => {
+    // Entra direto sem senha
+    const success = await login(id);
     if (success) {
       router.replace('/');
     }
@@ -33,7 +31,7 @@ export default function LoginScreen() {
           
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.profilesContainer}>
             {usersList.filter(u => u.role === 'crianca').map(child => (
-              <TouchableOpacity key={child.id} style={styles.profileCard} onPress={() => handleChildLogin(child.id, child.secretCode)}>
+              <TouchableOpacity key={child.id} style={styles.profileCard} onPress={() => handleChildLogin(child.id)}>
                 <View style={styles.avatarCircle}>
                   <Text style={styles.avatarEmoji}>{child.avatar}</Text>
                 </View>

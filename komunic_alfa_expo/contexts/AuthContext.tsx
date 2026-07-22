@@ -51,11 +51,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const found = usersList.find(u => u.id === id);
     if (!found) return false;
     
-    // Adultos podem pular a checagem de secret nesse mock simples ou checar a senha se estivesse armazenada segura
-    if (found.role === 'crianca' && found.secretCode !== secret) {
-      return false; // Senha incorreta
-    }
-
+    // Adultos podem pular a checagem de secret nesse mock simples, ou checar a senha se estivesse armazenada segura.
+    // Crianças não têm mais senha visual.
+    
     setUser(found);
     await AsyncStorage.setItem('@komunic_current_user', JSON.stringify(found));
     return true;
