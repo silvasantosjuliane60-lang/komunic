@@ -14,5 +14,8 @@ module.exports = (async () => {
   // Keep default watchFolders but avoid adding extra ones
   config.watchFolders = [];
 
+  // Add zip extension to assets
+  config.resolver.assetExts.push('zip');
+
   return config;
 })();

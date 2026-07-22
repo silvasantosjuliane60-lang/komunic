@@ -19,6 +19,7 @@ export const TRACKS = [
       { id: 25, path: '/games/memoria?level=1', title: 'JOGO DA MEMÓRIA 1', color: ['#FF9800', '#F57C00'], stars: 0, emoji: '🎴' },
       { id: 26, path: '/games/cores?level=1', title: 'CAÇADOR DE CORES 1', color: ['#9C27B0', '#6A1B9A'], stars: 0, emoji: '🎨' },
       { id: 27, path: '/games/quebra_cabeca?level=1', title: 'QUEBRA-CABEÇA 1', color: ['#4CAF50', '#2E7D32'], stars: 0, emoji: '🧩' },
+      { id: 101, path: '/webgame?page=tangram.html&title=TANGRAM DIVERTIDO', title: 'TANGRAM DIVERTIDO', color: ['#FF5722', '#D84315'], stars: 0, emoji: '🟧' },
     ],
   },
   {
@@ -36,6 +37,9 @@ export const TRACKS = [
       { id: 28, path: '/games/memoria?level=2', title: 'JOGO DA MEMÓRIA 2', color: ['#FF9800', '#F57C00'], stars: 0, emoji: '🎴' },
       { id: 29, path: '/games/cores?level=2', title: 'CAÇADOR DE CORES 2', color: ['#9C27B0', '#6A1B9A'], stars: 0, emoji: '🎨' },
       { id: 30, path: '/games/quebra_cabeca?level=2', title: 'QUEBRA-CABEÇA 2', color: ['#4CAF50', '#2E7D32'], stars: 0, emoji: '🧩' },
+      { id: 102, path: '/webgame?page=letras-som.html&title=AS LETRAS TÊM SOM', title: 'AS LETRAS TÊM SOM', color: ['#9b59b6', '#8e44ad'], stars: 0, emoji: '🅰️' },
+      { id: 103, path: '/webgame?page=guardiao-sons.html&title=O GUARDIÃO DOS SONS', title: 'O GUARDIÃO DOS SONS', color: ['#2ecc71', '#27ae60'], stars: 0, emoji: '🐸' },
+      { id: 104, path: '/webgame?page=show-dos-sons.html&title=O SHOW DOS SONS', title: 'O SHOW DOS SONS', color: ['#f1c40f', '#f39c12'], stars: 0, emoji: '🎤' },
     ],
   },
   {
@@ -51,6 +55,8 @@ export const TRACKS = [
       { id: 31, path: '/games/memoria?level=3', title: 'JOGO DA MEMÓRIA 3', color: ['#FF9800', '#F57C00'], stars: 0, emoji: '🎴' },
       { id: 32, path: '/games/cores?level=3', title: 'CAÇADOR DE CORES 3', color: ['#9C27B0', '#6A1B9A'], stars: 0, emoji: '🎨' },
       { id: 33, path: '/games/quebra_cabeca?level=3', title: 'QUEBRA-CABEÇA 3', color: ['#4CAF50', '#2E7D32'], stars: 0, emoji: '🧩' },
+      { id: 105, path: '/webgame?page=fon-fon.html&title=FON-FON O CARRINHO', title: 'FON-FON O CARRINHO', color: ['#e74c3c', '#c0392b'], stars: 0, emoji: '🚗' },
+      { id: 106, path: '/webgame?page=jogo-baloes.html&title=JOGO DOS BALÕES', title: 'JOGO DOS BALÕES', color: ['#3498db', '#2980b9'], stars: 0, emoji: '🎈' },
     ],
   },
   {
