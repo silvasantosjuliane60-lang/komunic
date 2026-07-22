@@ -55,6 +55,25 @@ export default function MapScreen() {
       </SafeAreaView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {/* CASTELO DE LIBRAS (DESTAQUE) */}
+        <View style={styles.trackCardWrapper}>
+          <TouchableOpacity activeOpacity={0.85} style={styles.trackCardContainer} onPress={() => router.push('/games/mundo_libras')}>
+            <LinearGradient colors={['#1E88E5', '#1565C0']} style={[styles.trackCard, { minHeight: 200, borderWidth: 4, borderColor: '#FFD700' }]}>
+              <View style={styles.glossyHighlight} />
+              <Text style={{fontSize: 50, textAlign: 'center'}}>🧏‍♀️</Text>
+              <Text style={{fontSize: 26, fontWeight: '900', color: '#FFF', marginTop: 10, textAlign: 'center', textShadowColor: 'rgba(0, 0, 0, 0.5)', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 3}}>
+                MUNDO DE LIBRAS
+              </Text>
+              <Text style={styles.trackCardSubtitle}>O jogo especial de acessibilidade com dicionário e quiz!</Text>
+              <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 15}}>
+                <Ionicons name="star" size={24} color="#FFD700" />
+                <Ionicons name="star" size={24} color="#FFD700" />
+                <Ionicons name="star" size={24} color="#FFD700" />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
         {TRACKS.map((track) => (
           <View key={track.id} style={styles.trackCardWrapper}>
             <TrackCard track={track} onPress={() => router.push(`/tracks/${track.id}`)} />

@@ -20,7 +20,6 @@ export const TRACKS = [
       { id: 26, path: '/games/cores?level=1', title: 'CAÇADOR DE CORES 1', color: ['#9C27B0', '#6A1B9A'], stars: 0, emoji: '🎨' },
       { id: 27, path: '/games/quebra_cabeca?level=1', title: 'QUEBRA-CABEÇA 1', color: ['#4CAF50', '#2E7D32'], stars: 0, emoji: '🧩' },
       { id: 101, path: '/webgame?page=tangram.html&title=TANGRAM DIVERTIDO', title: 'TANGRAM DIVERTIDO', color: ['#FF5722', '#D84315'], stars: 0, emoji: '🟧' },
-      { id: 107, path: '/games/mundo_libras', title: 'MUNDO DE LIBRAS', color: ['#1E88E5', '#1565C0'], stars: 0, emoji: '🧏‍♀️' },
     ],
   },
   {
