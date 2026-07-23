@@ -3,9 +3,19 @@ import { Colors } from './Colors';
 
 export const TRACKS = [
   {
+    id: 1000,
+    title: 'TRILHA 1: COMUNICAÇÃO ALTERNATIVA',
+    subtitle: 'Cultura Digital: Prancha e desenho para se expressar livremente.',
+    color: ['#E91E63', '#C2185B'],
+    games: [
+      { id: 200, path: '/caa_board/prancha', title: 'FALAR (PRANCHA)', color: ['#E91E63', '#C2185B'], stars: 0, emoji: '💬' },
+      { id: 201, path: '/caa_board/desenho', title: 'DESENHAR', color: ['#4CAF50', '#2E7D32'], stars: 0, emoji: '🎨' },
+    ],
+  },
+  {
     id: 1,
-    title: 'TRILHA 1: EXPLORADORES (Não-Leitores)',
-    subtitle: 'Foco na visão, escuta e lógica! Sem precisar ler.',
+    title: 'TRILHA 2: EXPLORADORES (Não-Leitores)',
+    subtitle: 'Pensamento Computacional: Foco na visão, escuta e reconhecimento de padrões.',
     color: ['#4CAF50', '#2E7D32'],
     games: [
       { id: 9, path: '/games/sombras', title: 'JOGO DAS SOMBRAS', color: ['#424242', '#212121'], stars: 0, emoji: '👤' },
@@ -23,8 +33,8 @@ export const TRACKS = [
   },
   {
     id: 2,
-    title: 'TRILHA 2: CURIOSOS (Primeiros Passos)',
-    subtitle: 'Ouvindo os sons, rimando e conhecendo as letras.',
+    title: 'TRILHA 3: CURIOSOS (Primeiros Passos)',
+    subtitle: 'Pensamento Computacional: Ouvindo sons, rimando e decodificando as letras.',
     color: ['#00BCD4', '#0097A7'],
     games: [
       { id: 8, path: '/games/fonico', title: 'LABORATÓRIO DOS SONS', color: ['#8A2387', '#E94057'], stars: 0, emoji: '🎵' },
@@ -40,8 +50,8 @@ export const TRACKS = [
   },
   {
     id: 3,
-    title: 'TRILHA 3: CONSTRUTORES (Formando Palavras)',
-    subtitle: 'Juntando pedacinhos para formar palavras inteiras.',
+    title: 'TRILHA 4: CONSTRUTORES (Formando Palavras)',
+    subtitle: 'Pensamento Computacional: Juntando os dados (sílabas) para formar palavras.',
     color: ['#FF9800', '#E65100'],
     games: [
       { id: 3, path: '/games/silabas', title: 'VALE DAS SÍLABAS', color: Colors.orangeButtonGradient, stars: 1, emoji: '🧩' },
@@ -55,8 +65,8 @@ export const TRACKS = [
   },
   {
     id: 4,
-    title: 'TRILHA 4: MESTRES (Leitura Fluente)',
-    subtitle: 'Lendo frases e histórias de forma independente!',
+    title: 'TRILHA 5: MESTRES (Leitura Fluente)',
+    subtitle: 'Cultura Digital: Lendo frases e interagindo com histórias digitais.',
     color: ['#F44336', '#C62828'],
     games: [
       { id: 5, path: '/games/frases', title: 'VILA DAS FRASES', color: Colors.redButtonGradient, stars: 0, emoji: '💬' },
@@ -67,8 +77,8 @@ export const TRACKS = [
   },
   {
     id: 5,
-    title: 'PARQUE DE DIVERSÕES (Novos Jogos)',
-    subtitle: 'Uma trilha especial só com os novos minigames!',
+    title: 'TRILHA 6: PARQUE DE DIVERSÕES (Inovação)',
+    subtitle: 'Mundo Digital: Uma trilha de exploração com os novos minigames interativos!',
     color: ['#9C27B0', '#6A1B9A'],
     games: [
       { id: 100, path: '/webgame?page=cineminha-sons.html&title=CINEMINHA DOS SONS', title: 'CINEMINHA DOS SONS', color: ['#e74c3c', '#c0392b'], stars: 0, emoji: '🎬' },
@@ -78,6 +88,16 @@ export const TRACKS = [
       { id: 104, path: '/webgame?page=show-dos-sons.html&title=O SHOW DOS SONS', title: 'O SHOW DOS SONS', color: ['#f1c40f', '#f39c12'], stars: 0, emoji: '🎤' },
       { id: 105, path: '/webgame?page=fon-fon.html&title=FON-FON O CARRINHO', title: 'FON-FON O CARRINHO', color: ['#e74c3c', '#c0392b'], stars: 0, emoji: '🚗' },
       { id: 106, path: '/webgame?page=jogo-baloes.html&title=JOGO DOS BALÕES', title: 'JOGO DOS BALÕES', color: ['#3498db', '#2980b9'], stars: 0, emoji: '🎈' },
+    ],
+  },
+  {
+    id: 6,
+    title: 'TRILHA 7: MUNDO DAS LIBRAS (Inclusão)',
+    subtitle: 'Cultura Digital: Aprenda o alfabeto e desafie seus conhecimentos na Língua de Sinais!',
+    color: ['#00BCD4', '#0097A7'],
+    games: [
+      { id: 202, path: '/games/mundo_libras/aprender', title: 'APRENDER LIBRAS', color: ['#4CAF50', '#2E7D32'], stars: 0, emoji: '🤟' },
+      { id: 203, path: '/games/mundo_libras/desafio', title: 'DESAFIO LIBRAS', color: ['#FF9800', '#F57C00'], stars: 0, emoji: '🏆' },
     ],
   },
 ];

@@ -84,10 +84,10 @@ export default function ModoAprender() {
                 <Text style={styles.modalEmoji}>{(selectedItem as any).emoji}</Text>
                 <Text style={styles.modalTitle}>{(selectedItem as any).word}</Text>
                 
-                <View style={styles.videoPlaceholder}>
-                  <Ionicons name="videocam" size={60} color="#999" />
-                  <Text style={styles.videoPlaceholderText}>ESPAÇO RESERVADO PARA VÍDEO LIBRAS</Text>
-                  <Text style={styles.videoPlaceholderSub}>({(selectedItem as any).id}.mp4)</Text>
+                <View style={styles.signDisplay}>
+                  <Text style={styles.signDisplayEmoji}>🤟 {(selectedItem as any).emoji}</Text>
+                  <Text style={styles.signDisplayText}>Sinal de {(selectedItem as any).word}</Text>
+                  <Text style={styles.signDisplaySub}>[ Imagem/Vídeo em Breve ]</Text>
                 </View>
 
                 <TouchableOpacity 
@@ -125,9 +125,10 @@ const styles = StyleSheet.create({
   closeButton: { position: 'absolute', top: -20, right: -15, backgroundColor: '#FFF', borderRadius: 30 },
   modalEmoji: { fontSize: 80, marginTop: 10 },
   modalTitle: { fontSize: 36, fontWeight: '900', color: '#333', marginVertical: 10, textAlign: 'center' },
-  videoPlaceholder: { width: '100%', aspectRatio: 16/9, backgroundColor: '#E0E0E0', borderRadius: 20, borderWidth: 3, borderColor: '#CCC', borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', marginVertical: 20 },
-  videoPlaceholderText: { color: '#666', fontWeight: 'bold', marginTop: 10, textAlign: 'center', paddingHorizontal: 20 },
-  videoPlaceholderSub: { color: '#999', marginTop: 5 },
+  signDisplay: { width: '100%', paddingVertical: 40, backgroundColor: '#E3F2FD', borderRadius: 20, borderWidth: 2, borderColor: '#64B5F6', justifyContent: 'center', alignItems: 'center', marginVertical: 20 },
+  signDisplayEmoji: { fontSize: 80, marginBottom: 10 },
+  signDisplayText: { color: '#1565C0', fontWeight: '900', fontSize: 20, textAlign: 'center', paddingHorizontal: 20 },
+  signDisplaySub: { color: '#64B5F6', fontWeight: 'bold', marginTop: 10 },
   soundButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#4CAF50', paddingHorizontal: 30, paddingVertical: 15, borderRadius: 30, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 5 },
   soundButtonText: { color: '#FFF', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }
 });
