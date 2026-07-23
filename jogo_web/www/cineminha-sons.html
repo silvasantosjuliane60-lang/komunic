@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Cineminha dos Sons</title>
+  <style>
+    :root {
+      --primary-color: #e74c3c;
+      --bg-color: #2c3e50;
+      --card-bg: #ecf0f1;
+      --text-color: #2c3e50;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--card-bg);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #f1c40f;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .btn-play {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 20px 50px;
+      font-size: 2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+
+    .btn-play:active {
+      transform: scale(0.95);
+    }
+    
+    .btn-dica {
+      background-color: #9b59b6;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cinema-card {
+      background-color: var(--card-bg);
+      border-radius: 30px;
+      width: 80%;
+      max-width: 400px;
+      aspect-ratio: 1/1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      color: var(--text-color);
+      animation: slideIn 0.5s ease-out;
+      position: relative;
+    }
+
+    .letter {
+      font-size: 6rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .icon {
+      font-size: 7rem;
+    }
+
+    .word {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 15px;
+      color: #7f8c8d;
+    }
+
+    @keyframes slideIn {
+      0% { transform: scale(0.5) translateY(100px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .playing .icon {
+      animation: pulse 1s infinite;
+    }
+
+    .btn-voltar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 2rem;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      z-index: 100;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      color: #333;
+      padding: 30px;
+      border-radius: 20px;
+      width: 85%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .lyrics {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      text-align: left;
+      margin-top: 20px;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 5px solid #9b59b6;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="btn-voltar" onclick="window.location.href='index.html'">⬅️</button>
+
+  <!-- Tela Inicial -->
+  <div id="start-screen" class="screen active">
+    <h1>🎬 Cineminha dos Sons</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 40px; text-align: center; max-width: 80%;">
+      Aperte o play e assista ao show das letras e seus sons!
+    </p>
+    <button class="btn-play" onclick="startCinema()">▶️ PLAY</button>
+
+    <button class="btn-dica" onclick="openModal()">💡 Dica do Mestre</button>
+  </div>
+
+  <!-- Tela de Exibição (Cineminha) -->
+  <div id="cinema-screen" class="screen">
+    <div class="cinema-card" id="cinema-card">
+      <div class="letter" id="c-letter">A</div>
+      <div class="icon" id="c-icon">🐝</div>
+      <div class="word" id="c-word">Abelha</div>
+    </div>
+  </div>
+
+  <!-- Modal Dica do Mestre -->
+  <div class="modal-overlay" id="dica-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">X</button>
+      <h2 style="color: #9b59b6; margin-top: 0;">💡 Dica do Mestre</h2>
+      <p style="font-size: 1.1rem; color: #666;">Cante com as crianças no ritmo de <strong>"Brilha Brilha Estrelinha"</strong> e ensine os fonemas brincando!</p>
+      
+      <div class="lyrics">
+        A abelha faz <strong>/a/ /a/ /a/</strong>,<br>
+        E a bola faz <strong>/b/ /b/ /b/</strong>!<br>
+        O cachorro faz <strong>/k/ /k/ /k/</strong>,<br>
+        Vem comigo aprender!<br>
+        O fonema é bem legal,<br>
+        Nossa turma é genial!<br><br>
+        
+        O elefante faz <strong>/e/ /e/ /e/</strong>,<br>
+        E a foca faz <strong>/f/ /f/ /f/</strong>!<br>
+        O gatinho faz <strong>/g/ /g/ /g/</strong>,<br>
+        É tão fácil de entender!<br>
+        O fonema é bem legal,<br>
+        Nossa turma é genial!
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cineData = [
+      { letter: "A", icon: "🐝", word: "Abelha" },
+      { letter: "B", icon: "⚽", word: "Bola" },
+      { letter: "C", icon: "🐶", word: "Cachorro" },
+      { letter: "D", icon: "🎲", word: "Dado" },
+      { letter: "E", icon: "🐘", word: "Elefante" },
+      { letter: "F", icon: "🦭", word: "Foca" },
+      { letter: "G", icon: "🐱", word: "Gato" },
+      { letter: "I", icon: "⛺", word: "Índio" },
+      { letter: "J", icon: "🐊", word: "Jacaré" },
+      { letter: "K", icon: "🥝", word: "Kiwi" },
+      { letter: "L", icon: "🐺", word: "Lobo" },
+      { letter: "M", icon: "🐒", word: "Macaco" },
+      { letter: "N", icon: "🚢", word: "Navio" },
+      { letter: "O", icon: "🐑", word: "Ovelha" },
+      { letter: "P", icon: "🦆", word: "Pato" },
+      { letter: "Q", icon: "🧀", word: "Queijo" },
+      { letter: "R", icon: "🐭", word: "Rato" },
+      { letter: "S", icon: "🐸", word: "Sapo" },
+      { letter: "T", icon: "🦔", word: "Tatu" },
+      { letter: "U", icon: "🍇", word: "Uva" },
+      { letter: "V", icon: "🐮", word: "Vaca" },
+      { letter: "W", icon: "🧇", word: "Wafer" },
+      { letter: "X", icon: "☕", word: "Xícara" },
+      { letter: "Y", icon: "▶️", word: "Youtube" },
+      { letter: "Z", icon: "🦓", word: "Zebra" }
+    ];
+
+    let currentIndex = 0;
+    let currentAudio = null;
+    let isPlaying = false;
+
+    function startCinema() {
+      document.getElementById('start-screen').classList.remove('active');
+      document.getElementById('cinema-screen').classList.add('active');
+      currentIndex = 0;
+      showSlide();
+    }
+
+    function showSlide() {
+      if (currentIndex >= cineData.length) {
+        document.getElementById('start-screen').classList.add('active');
+        document.getElementById('cinema-screen').classList.remove('active');
+        return;
+      }
+
+      const data = cineData[currentIndex];
+      const card = document.getElementById('cinema-card');
+      
+      card.style.animation = 'none';
+      card.offsetHeight; 
+      card.style.animation = 'slideIn 0.5s ease-out';
+      
+      document.getElementById('c-letter').textContent = data.letter;
+      document.getElementById('c-icon').textContent = data.icon;
+      document.getElementById('c-word').textContent = data.word;
+
+      setTimeout(() => playSound(data.letter), 1000);
+    }
+
+    function playSound(letter) {
+      document.getElementById('cinema-card').classList.add('playing');
+      
+      if(currentAudio) {
+          currentAudio.pause();
+      }
+      
+      currentAudio = new Audio(`assets/audio/fonetico/${letter}.mp3`);
+      
+      currentAudio.onended = () => {
+          document.getElementById('cinema-card').classList.remove('playing');
+          setTimeout(() => {
+              currentIndex++;
+              showSlide();
+          }, 1500);
+      };
+
+      currentAudio.onerror = () => {
+          console.log("Áudio não encontrado para", letter);
+          document.getElementById('cinema-card').classList.remove('playing');
+          setTimeout(() => {
+              currentIndex++;
+              showSlide();
+          }, 1000);
+      };
+
+      currentAudio.play().catch(e => {
+          console.log(e);
+          document.getElementById('cinema-card').classList.remove('playing');
+          setTimeout(() => { currentIndex++; showSlide(); }, 1000);
+      });
+    }
+
+    function openModal() {
+      document.getElementById('dica-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('dica-modal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

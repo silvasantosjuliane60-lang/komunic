@@ -172,12 +172,6 @@
   <div class="feedback" id="feedback"></div>
   <button class="next-btn" id="next-btn" onclick="nextRound()">Próxima Fase ➡️</button>
 
-  <!-- Setas de Navegação -->
-  <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
-      <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='show-dos-sons.html'" title="Jogo Anterior">⬅️</button>
-      <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='jogo-baloes.html'" title="Próximo Jogo">➡️</button>
-  </div>
-
   <script>
     // Dados do jogo: Letra target (usada para carregar o MP3), e Opções visuais
     const gameData = [
@@ -204,6 +198,54 @@
           { name: "Lobo", icon: "🐺", correct: false },
           { name: "Macaco", icon: "🐒", correct: true }
         ]
+      },
+      {
+        targetSound: "B",
+        options: [
+          { name: "Foca", icon: "🦭", correct: false },
+          { name: "Bola", icon: "⚽", correct: true },
+          { name: "Gato", icon: "🐱", correct: false }
+        ]
+      },
+      {
+        targetSound: "V",
+        options: [
+          { name: "Sapo", icon: "🐸", correct: false },
+          { name: "Pato", icon: "🦆", correct: false },
+          { name: "Vaca", icon: "🐮", correct: true }
+        ]
+      },
+      {
+        targetSound: "P",
+        options: [
+          { name: "Pato", icon: "🦆", correct: true },
+          { name: "Macaco", icon: "🐒", correct: false },
+          { name: "Sapo", icon: "🐸", correct: false }
+        ]
+      },
+      {
+        targetSound: "L",
+        options: [
+          { name: "Gato", icon: "🐱", correct: false },
+          { name: "Lobo", icon: "🐺", correct: true },
+          { name: "Vaca", icon: "🐮", correct: false }
+        ]
+      },
+      {
+        targetSound: "G",
+        options: [
+          { name: "Foca", icon: "🦭", correct: false },
+          { name: "Bola", icon: "⚽", correct: false },
+          { name: "Gato", icon: "🐱", correct: true }
+        ]
+      },
+      {
+        targetSound: "C",
+        options: [
+          { name: "Cachorro", icon: "🐶", correct: true },
+          { name: "Sapo", icon: "🐸", correct: false },
+          { name: "Pato", icon: "🦆", correct: false }
+        ]
       }
     ];
 
@@ -213,6 +255,7 @@
 
     // Toca os áudios gravados de feedback (palavras inteiras)
     function playWordAudio(name, type) {
+      isPlaying = false;
       if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
       
       let fileName = '';
@@ -230,27 +273,38 @@
       currentAudio.play().catch(e => console.log('Áudio MP3 não encontrado:', e));
     }
 
+    let isPlaying = false;
+
     // Toca o som puro/fonema da rodada atual usando os arquivos MP3 gravados
     function playCurrentSound() {
+      if (isPlaying) return; 
+      isPlaying = true;
+
       const data = gameData[currentRound];
       if(currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
       
-      // Toca primeiro a instrução (Ouça o som...)
-      currentAudio = new Audio(`assets/audio/guardiao/instrucao_guardiao.mp3`);
-      currentAudio.play().catch(e => console.log('Áudio da instrução não encontrado'));
-      
-      currentAudio.onended = () => {
-          // Quando a instrução terminar, toca o som da letra (ex: F.mp3)
-          const letterAudio = new Audio(`assets/audio/fonetico/${data.targetSound}.mp3`);
-          letterAudio.play().catch(e => {
-              console.log('Faltando o arquivo:', data.targetSound + '.mp3');
-          });
-      };
+      if (currentRound === 0) {
+          // Toca a instrução inteira apenas na primeira vez
+          currentAudio = new Audio(`assets/audio/guardiao/instrucao_guardiao.mp3`);
+          currentAudio.play().catch(e => { console.log('Áudio da instrução não encontrado'); isPlaying = false; });
+          
+          currentAudio.onended = () => {
+              currentAudio = new Audio(`assets/audio/fonetico/${data.targetSound}.mp3`);
+              currentAudio.play().catch(e => { console.log('Erro no áudio:', data.targetSound); isPlaying = false; });
+              currentAudio.onended = () => { isPlaying = false; };
+          };
+      } else {
+          // Nas outras vezes, vai direto ao som fonético
+          currentAudio = new Audio(`assets/audio/fonetico/${data.targetSound}.mp3`);
+          currentAudio.play().catch(e => { console.log('Erro no áudio:', data.targetSound); isPlaying = false; });
+          currentAudio.onended = () => { isPlaying = false; };
+      }
     }
 
     // Carrega os elementos da rodada na tela
     function loadRound() {
       canClick = true;
+      isPlaying = false;
       const data = gameData[currentRound];
       const container = document.getElementById('cards-container');
       const feedback = document.getElementById('feedback');
@@ -302,12 +356,12 @@
     function nextRound() {
       currentRound++;
       if (currentRound >= gameData.length) {
-          // Voltar ao começo ou menu
+          // Voltar ao começo
           document.getElementById('feedback').textContent = "🎉 Você venceu todos os desafios!";
           document.getElementById('next-btn').style.display = 'none';
           document.getElementById('cards-container').innerHTML = '';
           playWordAudio('', 'final');
-          setTimeout(() => window.location.href = 'index.html', 4000);
+          setTimeout(() => location.reload(), 4000);
           return;
       }
       loadRound();

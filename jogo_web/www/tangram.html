@@ -79,18 +79,13 @@
   </div>
 
   <button class="btn-proximo" onclick="reiniciarJogo()">🎮 Jogar Novamente</button>
-  <button class="btn-voltar" onclick="window.location.href='index.html'">🏠 Voltar ao Menu</button>
 
   <div class="celebracao" id="celebracao">
     <h1 id="textoCelebracao">🎉 Parabéns!</h1>
     <button class="btn-proximo" onclick="avancarFase()">Próxima Figura ➡️</button>
   </div>
 
-  <!-- Setas de Navegação -->
-  <div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 15px; z-index: 1000;">
-      <button style="background: #95a5a6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='index.html'" title="Voltar ao Menu">⬅️</button>
-      <button style="background: #2ecc71; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center;" onclick="window.location.href='jogo-baloes.html'" title="Próximo Jogo">➡️</button>
-  </div>
+
 
   <script>
     // --- ÁUDIO GRAVADO (MP3) ---
@@ -171,10 +166,11 @@
       {
         id: "Aviao", nome: "Avião ✈️", 
         pecas: [
-          { id: 1, tipo: "triangulo", cor: "#e74c3c", width: 100, height: 100, targetX: 130, targetY: 100, svg: `<polygon points="0,100 50,0 100,100" fill="#e74c3c"/>`, som: "tangram_peca_triangulo" },
-          { id: 2, tipo: "triangulo", cor: "#3498db", width: 80, height: 80, targetX: 40, targetY: 120, svg: `<polygon points="0,0 80,40 0,80" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
-          { id: 3, tipo: "triangulo", cor: "#3498db", width: 80, height: 80, targetX: 200, targetY: 120, svg: `<polygon points="80,0 0,40 80,80" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
-          { id: 4, tipo: "quadrado", cor: "#f1c40f", width: 60, height: 60, targetX: 150, targetY: 210, svg: `<rect width="60" height="60" fill="#f1c40f"/>`, som: "tangram_peca_quadrado" }
+          { id: 1, tipo: "retangulo", cor: "#00cec9", width: 140, height: 40, targetX: 80, targetY: 140, svg: `<rect width="140" height="40" fill="#00cec9"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "triangulo", cor: "#fd79a8", width: 40, height: 40, targetX: 220, targetY: 140, svg: `<polygon points="0,0 40,20 0,40" fill="#fd79a8"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "triangulo", cor: "#9b59b6", width: 60, height: 50, targetX: 130, targetY: 90, svg: `<polygon points="0,50 60,50 40,0" fill="#9b59b6"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "triangulo", cor: "#9b59b6", width: 60, height: 50, targetX: 130, targetY: 180, svg: `<polygon points="0,0 60,0 40,50" fill="#9b59b6"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "triangulo", cor: "#f1c40f", width: 40, height: 40, targetX: 80, targetY: 100, svg: `<polygon points="40,40 40,0 0,40" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" }
         ]
       },
       {
@@ -207,7 +203,7 @@
         id: "Foguete", nome: "Foguete 🚀", 
         pecas: [
           { id: 1, tipo: "triangulo", cor: "#e74c3c", width: 80, height: 60, targetX: 130, targetY: 40, svg: `<polygon points="40,0 80,60 0,60" fill="#e74c3c"/>`, som: "tangram_peca_triangulo" },
-          { id: 2, tipo: "retangulo", cor: "#ecf0f1", width: 80, height: 120, targetX: 130, targetY: 100, svg: `<rect width="80" height="120" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "retangulo", cor: "#fd79a8", width: 80, height: 120, targetX: 130, targetY: 100, svg: `<rect width="80" height="120" fill="#fd79a8" stroke="#e74c3c" stroke-width="2"/>`, som: "tangram_peca_retangulo" },
           { id: 3, tipo: "triangulo", cor: "#3498db", width: 40, height: 60, targetX: 90, targetY: 160, svg: `<polygon points="40,0 40,60 0,60" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
           { id: 4, tipo: "triangulo", cor: "#3498db", width: 40, height: 60, targetX: 210, targetY: 160, svg: `<polygon points="0,0 40,60 0,60" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
           { id: 5, tipo: "triangulo", cor: "#f1c40f", width: 60, height: 40, targetX: 140, targetY: 220, svg: `<polygon points="0,0 60,0 30,40" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" }
@@ -228,6 +224,115 @@
           { id: 2, tipo: "triangulo", cor: "#f1c40f", width: 80, height: 80, targetX: 60, targetY: 120, svg: `<polygon points="0,0 80,40 0,80" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" },
           { id: 3, tipo: "triangulo", cor: "#d35400", width: 40, height: 40, targetX: 160, targetY: 60, svg: `<polygon points="0,40 20,0 40,40" fill="#d35400"/>`, som: "tangram_peca_triangulo" },
           { id: 4, tipo: "triangulo", cor: "#d35400", width: 40, height: 40, targetX: 160, targetY: 220, svg: `<polygon points="0,0 40,0 20,40" fill="#d35400"/>`, som: "tangram_peca_triangulo" }
+        ]
+      },
+      {
+        id: "Pato", nome: "Pato 🦆", 
+        pecas: [
+          { id: 1, tipo: "quadrado", cor: "#f1c40f", width: 60, height: 60, targetX: 180, targetY: 80, svg: `<rect width="60" height="60" fill="#f1c40f"/>`, som: "tangram_peca_quadrado" },
+          { id: 2, tipo: "retangulo", cor: "#f1c40f", width: 40, height: 40, targetX: 180, targetY: 140, svg: `<rect width="40" height="40" fill="#f1c40f"/>`, som: "tangram_peca_retangulo" },
+          { id: 3, tipo: "triangulo", cor: "#e67e22", width: 40, height: 30, targetX: 240, targetY: 95, svg: `<polygon points="0,0 40,15 0,30" fill="#e67e22"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "retangulo", cor: "#f1c40f", width: 100, height: 60, targetX: 100, targetY: 180, svg: `<rect width="100" height="60" fill="#f1c40f"/>`, som: "tangram_peca_retangulo" },
+          { id: 5, tipo: "triangulo", cor: "#f1c40f", width: 40, height: 60, targetX: 60, targetY: 180, svg: `<polygon points="40,0 0,60 40,60" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" },
+          { id: 6, tipo: "retangulo", cor: "#e67e22", width: 20, height: 20, targetX: 140, targetY: 240, svg: `<rect width="20" height="20" fill="#e67e22"/>`, som: "tangram_peca_retangulo" }
+        ]
+      },
+      {
+        id: "Borboleta", nome: "Borboleta 🦋", 
+        pecas: [
+          { id: 1, tipo: "retangulo", cor: "#9b59b6", width: 20, height: 140, targetX: 140, targetY: 60, svg: `<rect width="20" height="140" fill="#9b59b6" rx="10"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "triangulo", cor: "#3498db", width: 80, height: 80, targetX: 60, targetY: 60, svg: `<polygon points="80,80 0,0 80,0" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "triangulo", cor: "#e74c3c", width: 60, height: 60, targetX: 80, targetY: 140, svg: `<polygon points="60,0 0,60 60,60" fill="#e74c3c"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "triangulo", cor: "#3498db", width: 80, height: 80, targetX: 160, targetY: 60, svg: `<polygon points="0,80 80,0 0,0" fill="#3498db"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "triangulo", cor: "#e74c3c", width: 60, height: 60, targetX: 160, targetY: 140, svg: `<polygon points="0,0 60,60 0,60" fill="#e74c3c"/>`, som: "tangram_peca_triangulo" }
+        ]
+      },
+      {
+        id: "Flor", nome: "Flor 🌸", 
+        pecas: [
+          { id: 1, tipo: "retangulo", cor: "#2ecc71", width: 10, height: 100, targetX: 145, targetY: 150, svg: `<rect width="10" height="100" fill="#2ecc71"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "quadrado", cor: "#f1c40f", width: 50, height: 50, targetX: 125, targetY: 100, svg: `<rect width="50" height="50" fill="#f1c40f" rx="25"/>`, som: "tangram_peca_quadrado" },
+          { id: 3, tipo: "triangulo", cor: "#e91e63", width: 50, height: 50, targetX: 125, targetY: 50, svg: `<polygon points="0,50 25,0 50,50" fill="#e91e63"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "triangulo", cor: "#e91e63", width: 50, height: 50, targetX: 125, targetY: 150, svg: `<polygon points="0,0 50,0 25,50" fill="#e91e63"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "triangulo", cor: "#e91e63", width: 50, height: 50, targetX: 75, targetY: 100, svg: `<polygon points="50,0 0,25 50,50" fill="#e91e63"/>`, som: "tangram_peca_triangulo" },
+          { id: 6, tipo: "triangulo", cor: "#e91e63", width: 50, height: 50, targetX: 175, targetY: 100, svg: `<polygon points="0,0 50,25 0,50" fill="#e91e63"/>`, som: "tangram_peca_triangulo" }
+        ]
+      },
+      {
+        id: "Cachorro", nome: "Cachorro 🐶", 
+        pecas: [
+          { id: 1, tipo: "quadrado", cor: "#e67e22", width: 60, height: 60, targetX: 70, targetY: 70, svg: `<rect width="60" height="60" fill="#e67e22"/>`, som: "tangram_peca_quadrado" },
+          { id: 2, tipo: "triangulo", cor: "#d35400", width: 40, height: 40, targetX: 130, targetY: 70, svg: `<polygon points="0,0 40,0 0,40" fill="#d35400"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "retangulo", cor: "#e67e22", width: 100, height: 50, targetX: 90, targetY: 130, svg: `<rect width="100" height="50" fill="#e67e22"/>`, som: "tangram_peca_retangulo" },
+          { id: 4, tipo: "retangulo", cor: "#d35400", width: 20, height: 60, targetX: 100, targetY: 180, svg: `<rect width="20" height="60" fill="#d35400"/>`, som: "tangram_peca_retangulo" },
+          { id: 5, tipo: "retangulo", cor: "#d35400", width: 20, height: 60, targetX: 160, targetY: 180, svg: `<rect width="20" height="60" fill="#d35400"/>`, som: "tangram_peca_retangulo" },
+          { id: 6, tipo: "triangulo", cor: "#f1c40f", width: 30, height: 30, targetX: 190, targetY: 130, svg: `<polygon points="0,30 30,0 30,30" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" }
+        ]
+      },
+      {
+        id: "Tartaruga", nome: "Tartaruga 🐢", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#2ecc71", width: 120, height: 80, targetX: 90, targetY: 100, svg: `<polygon points="60,0 120,80 0,80" fill="#2ecc71"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "triangulo", cor: "#27ae60", width: 40, height: 40, targetX: 50, targetY: 140, svg: `<polygon points="40,0 40,40 0,40" fill="#27ae60"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "triangulo", cor: "#27ae60", width: 40, height: 40, targetX: 210, targetY: 140, svg: `<polygon points="0,0 40,40 0,40" fill="#27ae60"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "quadrado", cor: "#1abc9c", width: 40, height: 40, targetX: 210, targetY: 100, svg: `<rect width="40" height="40" fill="#1abc9c" rx="20"/>`, som: "tangram_peca_quadrado" }
+        ]
+      },
+      {
+        id: "Cisne", nome: "Cisne 🦢", 
+        pecas: [
+          { id: 1, tipo: "triangulo", cor: "#0984e3", width: 100, height: 100, targetX: 100, targetY: 120, svg: `<polygon points="100,100 0,100 100,0" fill="#0984e3"/>`, som: "tangram_peca_triangulo" },
+          { id: 2, tipo: "triangulo", cor: "#74b9ff", width: 60, height: 60, targetX: 40, targetY: 160, svg: `<polygon points="60,60 0,60 60,0" fill="#74b9ff"/>`, som: "tangram_peca_triangulo" },
+          { id: 3, tipo: "retangulo", cor: "#0984e3", width: 20, height: 80, targetX: 180, targetY: 40, svg: `<rect width="20" height="80" fill="#0984e3"/>`, som: "tangram_peca_retangulo" },
+          { id: 4, tipo: "quadrado", cor: "#74b9ff", width: 40, height: 40, targetX: 200, targetY: 20, svg: `<rect width="40" height="40" fill="#74b9ff"/>`, som: "tangram_peca_quadrado" },
+          { id: 5, tipo: "triangulo", cor: "#e67e22", width: 30, height: 20, targetX: 240, targetY: 30, svg: `<polygon points="0,0 30,10 0,20" fill="#e67e22"/>`, som: "tangram_peca_triangulo" }
+        ]
+      },
+      {
+        id: "Helicoptero", nome: "Helicóptero 🚁", 
+        pecas: [
+          { id: 1, tipo: "quadrado", cor: "#e74c3c", width: 80, height: 60, targetX: 100, targetY: 120, svg: `<rect width="80" height="60" fill="#e74c3c" rx="10"/>`, som: "tangram_peca_quadrado" },
+          { id: 2, tipo: "retangulo", cor: "#c0392b", width: 60, height: 20, targetX: 40, targetY: 140, svg: `<rect width="60" height="20" fill="#c0392b"/>`, som: "tangram_peca_retangulo" },
+          { id: 3, tipo: "triangulo", cor: "#c0392b", width: 30, height: 40, targetX: 10, targetY: 120, svg: `<polygon points="30,20 0,0 0,40" fill="#c0392b"/>`, som: "tangram_peca_triangulo" },
+          { id: 4, tipo: "retangulo", cor: "#7f8c8d", width: 140, height: 10, targetX: 70, targetY: 90, svg: `<rect width="140" height="10" fill="#7f8c8d"/>`, som: "tangram_peca_retangulo" },
+          { id: 5, tipo: "retangulo", cor: "#95a5a6", width: 10, height: 20, targetX: 135, targetY: 100, svg: `<rect width="10" height="20" fill="#95a5a6"/>`, som: "tangram_peca_retangulo" },
+          { id: 6, tipo: "retangulo", cor: "#7f8c8d", width: 60, height: 10, targetX: 110, targetY: 200, svg: `<rect width="60" height="10" fill="#7f8c8d"/>`, som: "tangram_peca_retangulo" },
+          { id: 7, tipo: "retangulo", cor: "#95a5a6", width: 10, height: 20, targetX: 135, targetY: 180, svg: `<rect width="10" height="20" fill="#95a5a6"/>`, som: "tangram_peca_retangulo" }
+        ]
+      },
+      {
+        id: "Trem", nome: "Trenzinho 🚂", 
+        pecas: [
+          { id: 1, tipo: "retangulo", cor: "#2980b9", width: 100, height: 60, targetX: 70, targetY: 130, svg: `<rect width="100" height="60" fill="#2980b9"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "quadrado", cor: "#e74c3c", width: 60, height: 60, targetX: 170, targetY: 130, svg: `<rect width="60" height="60" fill="#e74c3c"/>`, som: "tangram_peca_quadrado" },
+          { id: 3, tipo: "retangulo", cor: "#f1c40f", width: 20, height: 40, targetX: 100, targetY: 90, svg: `<rect width="20" height="40" fill="#f1c40f"/>`, som: "tangram_peca_retangulo" },
+          { id: 4, tipo: "triangulo", cor: "#27ae60", width: 40, height: 40, targetX: 30, targetY: 150, svg: `<polygon points="40,0 40,40 0,40" fill="#27ae60"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "quadrado", cor: "#34495e", width: 30, height: 30, targetX: 85, targetY: 190, svg: `<rect width="30" height="30" fill="#34495e" rx="15"/>`, som: "tangram_peca_quadrado" },
+          { id: 6, tipo: "quadrado", cor: "#34495e", width: 30, height: 30, targetX: 135, targetY: 190, svg: `<rect width="30" height="30" fill="#34495e" rx="15"/>`, som: "tangram_peca_quadrado" },
+          { id: 7, tipo: "quadrado", cor: "#34495e", width: 40, height: 40, targetX: 180, targetY: 190, svg: `<rect width="40" height="40" fill="#34495e" rx="20"/>`, som: "tangram_peca_quadrado" }
+        ]
+      },
+      {
+        id: "Dinossauro", nome: "Dinossauro 🦖", 
+        pecas: [
+          { id: 1, tipo: "retangulo", cor: "#27ae60", width: 80, height: 60, targetX: 100, targetY: 120, svg: `<rect width="80" height="60" fill="#27ae60"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "retangulo", cor: "#2ecc71", width: 30, height: 50, targetX: 150, targetY: 70, svg: `<rect width="30" height="50" fill="#2ecc71"/>`, som: "tangram_peca_retangulo" },
+          { id: 3, tipo: "quadrado", cor: "#27ae60", width: 40, height: 40, targetX: 160, targetY: 30, svg: `<rect width="40" height="40" fill="#27ae60"/>`, som: "tangram_peca_quadrado" },
+          { id: 4, tipo: "triangulo", cor: "#f1c40f", width: 60, height: 40, targetX: 40, targetY: 140, svg: `<polygon points="60,0 60,40 0,40" fill="#f1c40f"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "retangulo", cor: "#2ecc71", width: 20, height: 40, targetX: 110, targetY: 180, svg: `<rect width="20" height="40" fill="#2ecc71"/>`, som: "tangram_peca_retangulo" },
+          { id: 6, tipo: "retangulo", cor: "#2ecc71", width: 20, height: 40, targetX: 150, targetY: 180, svg: `<rect width="20" height="40" fill="#2ecc71"/>`, som: "tangram_peca_retangulo" }
+        ]
+      },
+      {
+        id: "Unicornio", nome: "Unicórnio 🦄", 
+        pecas: [
+          { id: 1, tipo: "retangulo", cor: "#ff9ff3", width: 80, height: 50, targetX: 100, targetY: 130, svg: `<rect width="80" height="50" fill="#ff9ff3"/>`, som: "tangram_peca_retangulo" },
+          { id: 2, tipo: "retangulo", cor: "#48dbfb", width: 30, height: 50, targetX: 150, targetY: 80, svg: `<rect width="30" height="50" fill="#48dbfb"/>`, som: "tangram_peca_retangulo" },
+          { id: 3, tipo: "quadrado", cor: "#ff9ff3", width: 40, height: 40, targetX: 160, targetY: 40, svg: `<rect width="40" height="40" fill="#ff9ff3"/>`, som: "tangram_peca_quadrado" },
+          { id: 4, tipo: "triangulo", cor: "#feca57", width: 20, height: 40, targetX: 190, targetY: 10, svg: `<polygon points="0,40 10,0 20,40" fill="#feca57"/>`, som: "tangram_peca_triangulo" },
+          { id: 5, tipo: "triangulo", cor: "#00d2d3", width: 40, height: 40, targetX: 60, targetY: 130, svg: `<polygon points="40,0 40,40 0,20" fill="#00d2d3"/>`, som: "tangram_peca_triangulo" },
+          { id: 6, tipo: "retangulo", cor: "#ff9ff3", width: 20, height: 50, targetX: 110, targetY: 180, svg: `<rect width="20" height="50" fill="#ff9ff3"/>`, som: "tangram_peca_retangulo" },
+          { id: 7, tipo: "retangulo", cor: "#48dbfb", width: 20, height: 50, targetX: 150, targetY: 180, svg: `<rect width="20" height="50" fill="#48dbfb"/>`, som: "tangram_peca_retangulo" }
         ]
       }
     ];
@@ -301,9 +406,12 @@
       // Verifica vitória
       const figura = FIGURAS[faseAtual];
       if (pecasEncaixadas === figura.pecas.length) {
+        // Toca o som de vitória imediatamente para indicar sucesso
+        tocarSomVitoria();
+        falarMP3(`tangram_vitoria_${figura.id}`);
+
+        // Dá 2.5 segundos para a criança observar a figura completa
         setTimeout(() => {
-          tocarSomVitoria();
-          falarMP3(`tangram_vitoria_${figura.id}`);
           document.getElementById('textoCelebracao').innerHTML = `🎉 Parabéns!<br>Você formou ${figura.nome}!`;
           
           if(faseAtual === FIGURAS.length - 1) {
@@ -311,7 +419,7 @@
           }
           
           document.getElementById('celebracao').classList.add('active');
-        }, 800);
+        }, 2500);
       }
     }
 
