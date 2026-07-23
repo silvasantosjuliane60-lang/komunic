@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
 import { LIBRAS_CATEGORIES, LIBRAS_ITEMS } from '../../../constants/LibrasData';
+import { LIBRAS_DICTIONARY } from '../../../components/LibrasSign';
 
 export default function ModoAprender() {
   const [activeCategory, setActiveCategory] = useState(LIBRAS_CATEGORIES[0]);
@@ -85,9 +86,20 @@ export default function ModoAprender() {
                 <Text style={styles.modalTitle}>{(selectedItem as any).word}</Text>
                 
                 <View style={styles.signDisplay}>
-                  <Text style={styles.signDisplayEmoji}>🤟 {(selectedItem as any).emoji}</Text>
-                  <Text style={styles.signDisplayText}>Sinal de {(selectedItem as any).word}</Text>
-                  <Text style={styles.signDisplaySub}>[ Imagem/Vídeo em Breve ]</Text>
+                  <Text style={styles.signDisplayText}>Datilologia (Sinal Soletrado)</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.datilologiaScroll}>
+                    {String((selectedItem as any).word).split('').map((char, index) => {
+                      const letter = char.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toUpperCase();
+                      const sign = LIBRAS_DICTIONARY[letter];
+                      if (!sign) return null;
+                      return (
+                        <View key={index} style={styles.datilologiaItem}>
+                          <Text style={styles.datilologiaEmoji}>{sign}</Text>
+                          <Text style={styles.datilologiaLetter}>{letter}</Text>
+                        </View>
+                      );
+                    })}
+                  </ScrollView>
                 </View>
 
                 <TouchableOpacity 
@@ -125,10 +137,12 @@ const styles = StyleSheet.create({
   closeButton: { position: 'absolute', top: -20, right: -15, backgroundColor: '#FFF', borderRadius: 30 },
   modalEmoji: { fontSize: 80, marginTop: 10 },
   modalTitle: { fontSize: 36, fontWeight: '900', color: '#333', marginVertical: 10, textAlign: 'center' },
-  signDisplay: { width: '100%', paddingVertical: 40, backgroundColor: '#E3F2FD', borderRadius: 20, borderWidth: 2, borderColor: '#64B5F6', justifyContent: 'center', alignItems: 'center', marginVertical: 20 },
-  signDisplayEmoji: { fontSize: 80, marginBottom: 10 },
-  signDisplayText: { color: '#1565C0', fontWeight: '900', fontSize: 20, textAlign: 'center', paddingHorizontal: 20 },
-  signDisplaySub: { color: '#64B5F6', fontWeight: 'bold', marginTop: 10 },
+  signDisplay: { width: '100%', paddingVertical: 20, backgroundColor: '#E3F2FD', borderRadius: 20, borderWidth: 2, borderColor: '#64B5F6', justifyContent: 'center', alignItems: 'center', marginVertical: 20 },
+  signDisplayText: { color: '#1565C0', fontWeight: '900', fontSize: 18, textAlign: 'center', marginBottom: 15 },
+  datilologiaScroll: { paddingHorizontal: 10, alignItems: 'center', gap: 10 },
+  datilologiaItem: { backgroundColor: '#FFF', padding: 10, borderRadius: 15, alignItems: 'center', borderWidth: 2, borderColor: '#90CAF9', minWidth: 60 },
+  datilologiaEmoji: { fontSize: 40 },
+  datilologiaLetter: { fontSize: 20, fontWeight: 'bold', color: '#1565C0', marginTop: 5 },
   soundButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#4CAF50', paddingHorizontal: 30, paddingVertical: 15, borderRadius: 30, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5, elevation: 5 },
   soundButtonText: { color: '#FFF', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }
 });
